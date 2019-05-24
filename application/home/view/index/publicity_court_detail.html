@@ -1,0 +1,48 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN""http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="format-detection" content="telephone=no"/>
+    <meta http-equiv="Cache-Control" content="no-transform"/>
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <title>
+        <block name="title">首页</block>
+        {$website['website_name']['value']}
+    </title>
+
+    <link href="/public/static/home/css/plugins/toastr/toastr.min.css" rel="stylesheet">
+    <link type="text/css" rel="stylesheet" href="/public/static/home/css/style.css">
+    <link type="text/css" rel="stylesheet" href="/public/static/home/css/core.css">
+    <link type="text/css" rel="stylesheet" href="/public/static/home/font-awesome/css/font-awesome.css">
+    <link type="text/css" rel="stylesheet" href="/public/static/home/css/plugins/slideBox/slideBox.css">
+</head>
+
+<block name="content">
+    <div class="container mt-15">
+        <div class="" style="width: 1150px;">
+            <div class="block-content pa-20">
+                <div class="article-title">
+                    {$section_info.title}
+                </div>
+                <div class="article-information">
+                    <span>发布时间:{$section_info.publish_time}</span>
+                </div>
+                <div class="article-summary">
+                    {$section_info.summary}
+                </div>
+                <div class="article-content">
+                    {$section_info.content}
+                </div>
+            </div>
+        </div>
+        <div class="clear mt-15"></div>
+    </div>
+</block>
+<!-- Mainly scripts -->
+<script src="/public/static/home/js/jquery.js"></script>
+<script src="/public/static/home/js/plugins/validate/jquery.validate.min.js"></script>
+<script src="/public/static/home/js/plugins/validate/messages_zh_cn.min.js"></script>
+<script src="/public/static/home/js/plugins/toastr/toastr.min.js"></script>
+<script src="/public/static/home/js/plugins/slideBox/slideBox.js"></script>
+<script src="/public/static/home/js/common/common.js"></script>

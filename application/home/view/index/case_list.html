@@ -22,20 +22,28 @@
         <div class="block-box fr" style="width: 950px;">
             <div class="block-title"><label class="color-primary">办案公示</label></div>
             <div class="block-content">
-                <ul class="article-list">
+                <table class="table-main w-100x">
+                    <thead>
+                    <tr>
+                        <th width="100px">检察官姓名</th>
+                        <th width="80px">办案数量</th>
+                        <th>分管/协管/所在业务部门</th>
+                        <th style="width: 500px">办案分类统计</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
                     <volist name="case_list" id="item">
-                        <li class="bg-icon-0 mb-10">
-                            <div class="fl">
-                                <a class=""
-                                   href="{:url('index/case_detail',['id'=>$item['id']])}">
-                                    {$item.name}
-                                </a>
-                            </div>
-                            <div class="fr"><span class="time"></span></div>
-                            <div class="clear"></div>
-                        </li>
+                        <tr>
+                            <td style="text-align: left;">{$item['web_user_name']}</td>
+                            <td>{$item['case_count']}</td>
+                            <td>{$item['depart_name']}</td>
+                            <td>{$item['type_name']}</td>
+                            <td><a data-menu="case_info" class="btn btn-primary px-20 fr" href="{:url('index/case_detail',['web_user_id'=>$item['web_user_id']])}">明细</a></td>
+                        </tr>
                     </volist>
-                </ul>
+                    </tbody>
+                </table>
                 <html:pager total="$total_page" index="$page"/>
             </div>
         </div>

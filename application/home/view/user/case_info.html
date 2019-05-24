@@ -17,10 +17,12 @@
             </thead>
             <tbody>
             <volist name="records" id="item">
+                <tr>
                 <td>{$item['case_count']}</td>
                 <td>{$item['depart_name']}</td>
                 <td>{$item['type_name']}</td>
                 <td><a data-menu="case_info" class="btn btn-primary px-20 fr" href="{:url('user/case_detail',['ref'=>'case_info'])}">明细</a></td>
+                </tr>
             </volist>
             </tbody>
         </table>

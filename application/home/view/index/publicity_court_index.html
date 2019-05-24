@@ -1,0 +1,110 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN""http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="format-detection" content="telephone=no"/>
+    <meta http-equiv="Cache-Control" content="no-transform"/>
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <title>
+        <block name="title">首页</block>
+        {$website['website_name']['value']}
+    </title>
+
+    <link href="/public/static/home/css/plugins/toastr/toastr.min.css" rel="stylesheet">
+    <link type="text/css" rel="stylesheet" href="/public/static/home/css/style.css">
+    <link type="text/css" rel="stylesheet" href="/public/static/home/css/core.css">
+    <link type="text/css" rel="stylesheet" href="/public/static/home/font-awesome/css/font-awesome.css">
+    <link type="text/css" rel="stylesheet" href="/public/static/home/css/plugins/slideBox/slideBox.css">
+</head>
+
+<block name="title"></block>
+<block name="content">
+
+    <div class="container"
+         style="position:relative; margin-top:15px;border:1px solid #eeeeee;height: 40px; background: url(/public/static/home/img/bg_notice.png)">
+        <div class="color-primary h3 font-bold" style="position: absolute;top: 10px;left: 20px;">办案公示</div>
+<!--        <if condition="empty($sec_list[7])">-->
+<!--            <a class="more" href="{:url('index/article_list',['section_id'=>7])}">更多</a>-->
+<!--            <else/>-->
+<!--            <a class="more" href="{$sec_list[7]}" target="_blank">更多</a>-->
+<!--        </if>-->
+        <div id="scroll_left" class="color-primary"
+             style="width: 1000px;padding: 0 40px; margin-left: 100px; font-size: 14px; height: 40px; overflow: hidden;position: relative">
+            <ul style="white-space: nowrap; position: absolute;left: 0;top: 10px;">
+                <volist name="publicity_court_list" id="item">
+                    <li class="bg-icon-0 mr-20 d-inline">
+                        <a class=""
+                           href="{:url('index/publicity_court_detail',['id'=>$item['id']])}">
+                            {$item.title}
+                        </a>
+                    </li>
+                    <li class="bg-icon-0 mr-20 d-inline">
+                        <a class=""
+                           href="{:url('index/publicity_court_detail',['id'=>$item['id']])}">
+                            {$item.title}
+                        </a>
+                    </li>
+                    <li class="bg-icon-0 mr-20 d-inline">
+                        <a class=""
+                           href="{:url('index/publicity_court_detail',['id'=>$item['id']])}">
+                            {$item.title}
+                        </a>
+                    </li>
+                    <li class="bg-icon-0 mr-20 d-inline">
+                        <a class=""
+                           href="{:url('index/article_detail',['id'=>$item['id']])}">
+                            {$item.title}
+                        </a>
+                    </li>
+                    <li class="bg-icon-0 mr-20 d-inline">
+                        <a class=""
+                           href="{:url('index/publicity_court_detail',['id'=>$item['id']])}">
+                            {$item.title}
+                        </a>
+                    </li>
+                    <li class="bg-icon-0 mr-20 d-inline">
+                        <a class=""
+                           href="{:url('index/publicity_court_detail',['id'=>$item['id']])}">
+                            {$item.title}
+                        </a>
+                    </li>
+                </volist>
+            </ul>
+        </div>
+    </div>
+</block>
+<!-- Mainly scripts -->
+<script src="/public/static/home/js/jquery.js"></script>
+<script src="/public/static/home/js/plugins/validate/jquery.validate.min.js"></script>
+<script src="/public/static/home/js/plugins/validate/messages_zh_cn.min.js"></script>
+<script src="/public/static/home/js/plugins/toastr/toastr.min.js"></script>
+<script src="/public/static/home/js/plugins/slideBox/slideBox.js"></script>
+<script src="/public/static/home/js/common/common.js"></script>
+<block name="script">
+    <script>
+        $(function () {
+            var num = 0;
+
+            function go_left() {
+                if (num < (1000 - $("#scroll_left ul").width())) {
+                    num = 0;
+                }
+                num -= 1;
+                $("#scroll_left ul").css({
+                    left: num
+                })
+            }
+
+            var timer = setInterval(go_left, 50);
+            $("#scroll_left").hover(function () {
+                    clearInterval(timer);
+                },
+                function () {
+                    timer = setInterval(go_left, 50);
+                }
+            );
+        });
+
+    </script>
+</block>

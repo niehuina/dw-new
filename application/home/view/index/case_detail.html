@@ -21,7 +21,8 @@
             </if>
         </div>
         <div class="block-box fr" style="width: 950px;">
-            <div class="block-content pa-20">
+            <div class="block-title"><label class="color-primary">{$web_user['name']}</label></div>
+            <div class="block-content">
                 <table class="table-main w-100x">
                     <thead>
                     <tr>
@@ -35,17 +36,20 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr class="pager">
-                        <td>{$case_info['accept_time']}</td>
-                        <td>{$case_info['name']}</td>
-                        <td>{$case_info['type_name']}</td>
-                        <td>{$case_info['department']}</td>
-                        <td>{$case_info['status']}</td>
-                        <td>{$case_info['due_time']}</td>
-                        <td>{$case_info['over_time']}</td>
-                    </tr>
+                    <volist name="case_list" id="item">
+                        <tr class="pager">
+                            <td>{$item['accept_time']}</td>
+                            <td>{$item['name']}</td>
+                            <td>{$item['type_name']}</td>
+                            <td>{$item['department']}</td>
+                            <td>{$item['status']}</td>
+                            <td>{$item['due_time']}</td>
+                            <td>{$item['over_time']}</td>
+                        </tr>
+                    </volist>
                     </tbody>
                 </table>
+                <html:pager total="$total_page" index="$page"/>
             </div>
         </div>
         <div class="clear mt-15"></div>

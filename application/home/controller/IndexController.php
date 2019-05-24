@@ -381,7 +381,7 @@ class IndexController extends BaseController
             $this->assign('section_children_list', $section_children_list);
         }
 
-        $case_list = CaseInfo::get_page_list('id,number,name', $page, $this->page_length);
+        $case_list = CaseInfo::get_current_year_report($page, $this->page_length);
         $total_count = $case_list['total_count'];
         $total_page = $total_count % $this->page_length ? intval($total_count / $this->page_length) + 1 : $total_count / $this->page_length;
         $this->assign('total_page', $total_page);
@@ -394,19 +394,45 @@ class IndexController extends BaseController
     public function case_detail()
     {
         $section_id = Constant::SETION_CASE_INFO;
-        $id = $this->request->param('id');
-        // $case_info = CaseInfo::get();
-        $case_info = db('case_info')
+        $web_user_id = $this->request->param('web_user_id');
+
+        $web_user = WebUser::get($web_user_id);
+        $this->assign('web_user', $web_user);
+
+        $page = $this->request->param('page');
+        $page = isset($page) ? $page : 1;
+        $this->assign('page', $page);
+
+        $start = 0;
+        $length = $this->page_length;
+        if ($page > 1) {
+            $start = (intval($page) - 1) * $length;
+        }
+
+        $map['case_info.web_user_id'] = $web_user_id;
+        $order = 'case_info.accept_time desc';
+        $total_count = db('case_info')
             ->join('web_user wu', 'wu.id=case_info.web_user_id', 'LEFT')
-            ->where(['case_info.id' => $id])
+            ->where($map)->count();
+
+        $records = db('case_info')
+            ->join('web_user wu', 'wu.id=case_info.web_user_id', 'LEFT')
+            ->where($map)
             ->field('case_info.warning,case_info.name,case_info.number,case_info.accept_time,
                 case_info.current_stage,case_info.status,case_info.due_time,case_info.over_time,case_info.complete_time,
                 case_info.record_time,case_info.type_name,
                 case when wu.name is null then case_info.user_name else wu.name end as user_name,
                 case_info.department,case_info.cell')
-            ->find();
+            ->limit($start, $length)->order($order)->select();
 
-        $this->assign('case_info', $case_info);
+        $i = $start + 1;
+        foreach ($records as $key => $item) {
+            $records[$key]['index'] = $i++;
+        }
+
+        $total_page = $total_count % $length ? intval($total_count / $length) + 1 : $total_count / $length;
+        $this->assign('total_page', $total_page);
+        $this->assign('case_list', $records);
 
         $section = Section::get($section_id);
         $this->assign('section', $section);
@@ -584,5 +610,23 @@ class IndexController extends BaseController
         }
 
         return 0;
+    }
+
+    public function publicity_court_index()
+    {
+        $list_count = 10;
+        $publicity_court_list = SectionInfo::get_list(Constant::SETION_PUBLICITY_COURT, [], 'si.*', 0, $list_count);
+        $this->assign('publicity_court_list', $publicity_court_list);
+
+        return view();
+    }
+
+    public function publicity_court_detail()
+    {
+        $section_info_id = $this->request->param('id');
+        $section_info = SectionInfo::get($section_info_id);
+        $this->assign('section_info', $section_info);
+
+        return view();
     }
 }
