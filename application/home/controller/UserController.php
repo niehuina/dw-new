@@ -433,6 +433,10 @@ class UserController extends BaseController
             ->find();
 
         $vacation_days = $sum_records['days'];
+		
+		if(empty($vacation_days)){
+			$vacation_days=0;
+		}
 
         $order = 'vr.start_time desc';
         $map['vr.deleted'] = '0';
@@ -629,13 +633,13 @@ class UserController extends BaseController
             }
         }
         if (empty($error_message)) {
-            return json(array(
+            echo json_encode(array(
                 'status' => 1,
                 "message" => "成功上传 $success 个文件",
                 'data' => $files
             ));
         } else {
-            return json(array(
+            echo json_encode(array(
                 'status' => 0,
                 "message" => "成功上传 $success 个文件，以下文件上传失败：<br>" . $error_message,
                 'data' => $files
@@ -647,5 +651,31 @@ class UserController extends BaseController
     {
         $file_path = $_POST['file_path'];
         unlink(ROOT_PATH . $file_path);
+    }
+
+    function download_file($file_path, $file_name)
+    {
+        $file = ROOT_PATH . $file_path;
+        if (is_file($file)) {
+            $length = filesize($file); //文件大小
+            $type = mime_content_type($file); //文件类型
+            $showname = $file_name;//ltrim(strrchr($file,'/'),'/'); //文件名
+            header("Content-Description: File Transfer");
+            header('Content-type: ' . $type);
+            header('Content-Length:' . $length);
+            $userBrowser = $_SERVER['HTTP_USER_AGENT'];
+            if (preg_match('/MSIE/i', $userBrowser)) {
+                $showname = urlencode($showname);
+            }
+            $showname = iconv('UTF-8', 'GBK//IGNORE', $showname);
+
+            header('Content-Disposition: attachment; filename="' . $showname . '"');
+            readfile($file);
+            exit;
+        } else {
+            $this->assign('result', '文件已被删除！');
+            return view();
+            //exit();
+        }
     }
 }

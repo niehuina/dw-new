@@ -17,12 +17,25 @@ jQuery.extend({
         var frameId = 'jUploadFrame' + id;
 
         if(window.ActiveXObject) {
-            var io = document.createElement('<iframe id="' + frameId + '" name="' + frameId + '" />');
-            if(typeof uri== 'boolean'){
-                io.src = 'javascript:false';
-            }
-            else if(typeof uri== 'string'){
-                io.src = uri;
+            if(jQuery.browser.version=="9.0" || jQuery.browser.version=="10.0"){
+                var io = document.createElement('iframe');
+                io.id = frameId;
+                io.name = frameId;
+            }else if(jQuery.browser.version=="6.0" || jQuery.browser.version=="7.0" || jQuery.browser.version=="8.0"){
+                var io = document.createElement('<iframe id="' + frameId + '" name="' + frameId + '" />');
+                if(typeof uri== 'boolean'){
+                    io.src = 'javascript:false';
+                }
+                else if(typeof uri== 'string'){
+                    io.src = uri;
+                }
+            }else {
+                var io = document.createElement('<iframe id="' + frameId + '" name="' + frameId + '" />');
+                if (typeof uri == 'boolean') {
+                    io.src = 'javascript:false';
+                } else if (typeof uri == 'string') {
+                    io.src = uri;
+                }
             }
         }
         else {

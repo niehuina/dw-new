@@ -5,7 +5,9 @@ namespace app\admin\controller;
 
 
 use app\admin\common\Constant;
+use app\admin\model\PublishType;
 use app\admin\model\SectionInfo;
+use app\admin\model\Setting;
 use think\Db;
 
 class PublishInfoReviewController extends BaseController
@@ -93,5 +95,26 @@ class PublishInfoReviewController extends BaseController
             'status' => 1,
             "message" => "保存成功"
         ));
+    }
+	
+	public function _item_maintain()
+    {
+        $id = $this->request->param('id');
+        $model = null;
+        $edit_state = false;
+        if (!empty($id)) {
+            $model = SectionInfo::get($id);
+            $edit_state = true;
+        }else{
+            $model['section_id'] = self::$section_id;
+        }
+
+        $publish_level = db('setting')->where(['type'=>'publicity_level'])->field('type,code,value')->select();
+        $this->assign('publish_level', $publish_level);
+        $this->assign('publish_type_list', PublishType::all(['deleted'=>0]));
+        $this->assign('model', $model);
+        $this->assign('edit_state', $edit_state);
+        $this->assign('can_edit', $this->can_edit);
+        return view();
     }
 }

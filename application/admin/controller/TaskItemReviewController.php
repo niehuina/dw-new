@@ -153,4 +153,30 @@ class TaskItemReviewController extends BaseController
             ));
         }
     }
+
+    function download_file($file_path, $file_name)
+    {
+        $file = ROOT_PATH . $file_path;
+        if (is_file($file)) {
+            $length = filesize($file); //文件大小
+            $type = mime_content_type($file); //文件类型
+            $showname = $file_name;//ltrim(strrchr($file,'/'),'/'); //文件名
+            header("Content-Description: File Transfer");
+            header('Content-type: ' . $type);
+            header('Content-Length:' . $length);
+            $userBrowser = $_SERVER['HTTP_USER_AGENT'];
+            if (preg_match('/MSIE/i', $userBrowser)) {
+                $showname = urlencode($showname);
+            }
+            $showname = iconv('UTF-8', 'GBK//IGNORE', $showname);
+
+            header('Content-Disposition: attachment; filename="' . $showname . '"');
+            readfile($file);
+            exit;
+        } else {
+            $this->assign('result', '文件已被删除！');
+            return view();
+            //exit();
+        }
+    }
 }

@@ -79,7 +79,8 @@
                 {
                     'data': null,
                     'render': function (data) {
-                        return '<a class="btn-audit" data-toggle="modal" data-target="#modal-md" title="审核" href="_item_review/id/' + data.id + '.html"><i class="fa fa-wrench"></i></a>';
+                        return '<a class="btn-audit" data-toggle="modal" data-target="#modal-md" title="审核" href="_item_review/id/' + data.id + '.html"><i class="fa fa-wrench"></i></a>'+
+						'<a data-toggle="modal" data-target="#modal-lg" title="查看"  href="_item_maintain/id/' + data.id + '.html"><i class="fa fa-eye"></i></a> ';
                     }
                 }
             ];

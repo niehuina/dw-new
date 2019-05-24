@@ -76,8 +76,8 @@
                             <volist name="attachment_list" id="item">
                                 <tr data-name="{$item['attachment_name']}" data-file="{$item['attachment_url']}">
                                     <td class="tl">
-                                        <a target="_blank" download="{$item['attachment_name']}"
-                                           href="/public/upload/task/{$item['attachment_url']}">{$item['attachment_name']}</a>
+                                        <a target="_blank"
+                                           href="/home/user/download_file.html?file_path=public/upload/task/{$item['attachment_url']}&file_name={$item['attachment_name']}">{$item['attachment_name']}</a>
                                     </td>
                                     <td class="tr"><a class="close" data-path="{$item['attachment_url']}">x</a></td>
                                 </tr>
@@ -155,8 +155,9 @@
                 data: {},       //提交的方式
                 secureuri: false,   //是否启用安全提交
                 fileElementId: 'file',     //file控件ID
-                dataType: 'json',  //服务器返回的数据类型
+                dataType: 'text',  //服务器返回的数据类型
                 success: function (data) {  //提交成功后自动执行的处理函数
+                    data =  jQuery.parseJSON(data);
                     $('#file').replaceWith('<input type="file" id="file" class="hidden" name="file[]" multiple="multiple"' +
                         'style="display: none;" onchange="file_change()"/>');
                     if (data.status == 1) {

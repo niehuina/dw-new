@@ -19,8 +19,9 @@
                     <label>附件</label>
                     <p>
                         <volist name="attachment_list" id="item">
-                    <p><a target="_blank" href="/public/upload/task/{$item['attachment_url']}"
-                          download="{$item['attachment_name']}">{$item['attachment_name']}</a></p>
+                    <p><a target="_blank"
+                          href="/admin/task_item_review/download_file.html?file_path=public/upload/task/{$item['attachment_url']}&file_name={$item['attachment_name']}"
+                    >{$item['attachment_name']}</a></p>
                     </volist>
                     </p>
                 </div>
