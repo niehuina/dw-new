@@ -1,0 +1,39 @@
+<extend name="public/user_base"/>
+
+<block name="title"></block>
+<block name="content_right">
+    <div class="block-content pa-20">
+        <div class="font-14 mb-10">
+            个人中心 > <a href="#">休假统计</a>
+
+        </div>
+        <div class="my-10">
+            年假总天数：<span class="h2 color-primary mr-20">{$year_vacation['total_vacation']}</span>
+            已休天数：<span class="h2 color-primary mr-20">{$year_vacation['vacation_days']}</span>
+            剩余天数：<span class="h2 color-primary mr-20">{$year_vacation['overplus_vacation']}</span>
+        </div>
+        <table class="table-main w-100x mt-30">
+            <thead>
+            <tr>
+                <th>休假类型</th>
+                <th>休假开始日期</th>
+                <th width="">结束日期</th>
+                <th width="">休假天数</th>
+            </tr>
+            </thead>
+            <tbody>
+            <volist name="records" id="item">
+                <tr>
+                    <td>{$item.type_name}</td>
+                    <td>{$item.start_time}</td>
+                    <td>{$item.end_time}</td>
+                    <td>{$item.days}</td>
+                </tr>
+            </volist>
+
+            </tbody>
+        </table>
+    </div>
+</block>
+<block name="script">
+</block>

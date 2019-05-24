@@ -1,0 +1,67 @@
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal">
+        <span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+    </button>
+    用户导入
+</div>
+<div class="modal-body ">
+    <!-- form begin -->
+    <form enctype="multipart/form-data" role="form" id="form">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="form-group">
+                    <label>上传导入文件</label>
+                    <p><input type="file" class="form-control" name="excel"
+                              autocomplete="off"/>
+                        <a href="/public/template/用户导入模板.xls">点击下载导入模板 </a></p>
+                </div>
+            </div>
+        </div>
+    </form>
+    <!-- form end -->
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+    <button type="button" class="btn btn-primary" data-style="zoom-in" id="submit">提交</button>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        function validate() {
+            return $("#form").validate({
+                rules: {
+                    excel: {
+                        required: true,
+                    },
+                },
+            }).form();
+        }
+
+        $("#submit").click(function () {
+            if (validate()) {
+                var load_btn = Ladda.create(this);
+                load_btn.start();
+                $.ajax({
+                    type: 'POST',
+                    url: "import",
+                    cache: false,
+                    data: new FormData($('#form')[0]),
+                    dataType: 'json',
+                    processData: false,
+                    contentType: false,
+                    success: function (data) {
+                        if (check_status(data)) {
+                            $('#modal-md').modal('hide');
+                            data_table.draw();
+                        }
+                    },
+                    error: function () {
+                        toastr["error"]('Error Occurred');
+                    }
+                }).always(function () {
+                    load_btn.stop();
+                });
+            }
+        });
+    });
+</script>

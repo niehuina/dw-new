@@ -1,0 +1,155 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN""http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="format-detection" content="telephone=no"/>
+    <meta http-equiv="Cache-Control" content="no-transform"/>
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <title>
+        <block name="title">首页</block>
+        {$website['website_name']['value']}
+    </title>
+
+    <link href="/public/static/home/css/plugins/toastr/toastr.min.css" rel="stylesheet">
+    <link type="text/css" rel="stylesheet" href="/public/static/home/css/style.css">
+    <link type="text/css" rel="stylesheet" href="/public/static/home/css/core.css">
+    <link type="text/css" rel="stylesheet" href="/public/static/home/font-awesome/css/font-awesome.css">
+    <link type="text/css" rel="stylesheet" href="/public/static/home/css/plugins/slideBox/slideBox.css">
+</head>
+<body>
+<style>
+</style>
+<header>
+    <div style="background-color: rgba(255, 255, 255, 0.79);  padding: 8px 10px;">
+        <div class="container">
+            <div class="fl date-now"></div>
+            <div class="fr">
+                <if condition="isset($user)">
+                    <span class="mr-10">您好，{$user['name']} <a href="{:url('log_out')}" id="log_out">登出</a></span>
+                    <a href="{:url('user/information')}" class="mr-10">个人中心</a>
+                    <a href="{:url('user/message')}" class="color-primary"><i class="fa fa-envelope color-primary"></i>
+                        ({$message_count})</a>
+                    <else/>
+                    <span class="mr-10">您好，请 <a href="{:url('index/login')}">登录</a></span>
+                </if>
+            </div>
+            <div class="clear"></div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="fl text-right pa-20">
+            <img src="{$website['website_logo']['value']|default='/public/static/home/img/logo.png'}" alt="" width="100"
+                 height="100">
+        </div>
+        <div class="fl text-left pa-20">
+
+            <h1 class="color-primary">利津县人民检察院
+            </h1>
+            <h2 class="color-primary"> 公示 · 监督 · 学习 · 进步
+            </h2>
+        </div>
+    </div>
+</header>
+<nav>
+    <div class="container">
+        <ul>
+            <li><a href="/home/index"> 网站首页 </a></li>
+            <volist name="section_list" id="item">
+                <if condition="empty($item.url)">
+                    <if condition="$item['id'] eq 3">
+                        <li>
+                            <a href="{:url('index/case_list',['section_id'=>$item['id']])}">{$item.name}</a>
+                        </li>
+                        <elseif condition="$item['id'] eq 2"/>
+                        <li>
+                            <a href="{:url('index/party_check_list',['action'=>1])}">{$item.name}</a>
+                        </li>
+                        <elseif condition="$item['id'] eq 4"/>
+                        <li>
+                            <a href="{:url('index/publish_list',['section_id'=>$item['id'],'is_home'=>'1'])}">{$item.name}</a>
+                        </li>
+                        <elseif condition="$item['id'] eq 5"/>
+                        <li>
+                            <a href="{:url('index/task_list',['section_id'=>$item['id'],'is_home'=>'1'])}">{$item.name}</a>
+                        </li>
+                        <else/>
+                        <li>
+                            <a href="{:url('index/article_list',['section_id'=>$item['id'],'is_home'=>'1'])}">{$item.name}</a>
+                        </li>
+                    </if>
+                    <else/>
+                    <li>
+                        <a href="{$item.url}" target="_blank">{$item.name}</a>
+                    </li>
+                </if>
+            </volist>
+            <li><a href="{:url('phone_list')}"> 人员电话表 </a></li>
+        </ul>
+    </div>
+</nav>
+<div class="content">
+    <block name="content"></block>
+</div>
+<footer>
+    <div style="background-color: #fff;border-top: 1px solid #f5f5f5">
+
+        <div class="container py-20 text-center" style="font-size: 14px;min-height:83px;">
+            <div class="fl"
+                 style="width: 80px;background-color: #cc0000;color: #fff;text-align: center;padding: 5px 10px;border-radius: 5px;">
+                友情链接
+            </div>
+            <div class="fr" style="width: 1100px;">
+                <volist name="link_list" id="item">
+                    <a class="mr-10" target="_blank" href="{$item.redirect_url}">{$item.name}</a>
+                </volist>
+            </div>
+            <div class="clear"></div>
+        </div>
+    </div>
+    <div style="background-color: #444;">
+        <div class="container py-10 text-center color-white">
+            {$website['copy_right']['value']}
+        </div>
+        <div class="container py-20 text-center color-white n-pt">
+            {$website['regist_info']['value']}
+        </div>
+    </div>
+</footer>
+<!-- Mainly scripts -->
+<script src="/public/static/home/js/jquery.js"></script>
+<script src="/public/static/home/js/plugins/validate/jquery.validate.min.js"></script>
+<script src="/public/static/home/js/plugins/validate/messages_zh_cn.min.js"></script>
+<script src="/public/static/home/js/plugins/toastr/toastr.min.js"></script>
+<script src="/public/static/home/js/plugins/slideBox/slideBox.js"></script>
+<script src="/public/static/home/js/common/common.js"></script>
+<block name="script">
+</block>
+<script type="text/javascript">
+    $(function () {
+        $(".date-now").html("" + new Date().Format("yyyy年MM月dd日 EEE "));
+
+        $('img').error(function () {
+            $(this).attr('src', "/public/static/home/img/empty.png");
+        })
+        $('img[src=""]').each(function () {
+            $(this).attr('src', "/public/static/home/img/empty.png");
+        })
+    })
+
+    function get_url(id, url) {
+        var item_url = url;
+        if (id == 2) {
+            item_url = "{:url('index/party_check_list',['action'=>1])}"
+        } else if (id == 3) {
+            item_url = "{:url('index/case_list',['section_id'=>3])}"
+        } else if (id == 4) {
+            item_url = "{:url('index/publish_list',['section_id'=>4,'is_home'=>'1'])}"
+        } else if (id == 5) {
+            item_url = "{:url('index/task_list',['section_id'=>5,'is_home'=>'1'])}"
+        }
+        return item_url;
+    }
+</script>
+</body>
+</html>

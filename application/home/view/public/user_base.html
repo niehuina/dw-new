@@ -1,0 +1,126 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN""http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="format-detection" content="telephone=no"/>
+    <meta http-equiv="Cache-Control" content="no-transform"/>
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <title>
+        <block name="title">个人中心</block>
+        {$website['website_name']['value']}
+    </title>
+    <link href="/public/static/home/css/plugins/toastr/toastr.min.css" rel="stylesheet">
+    <link type="text/css" rel="stylesheet" href="/public/static/home/css/style.css">
+    <link type="text/css" rel="stylesheet" href="/public/static/home/css/core.css">
+    <link type="text/css" rel="stylesheet" href="/public/static/home/font-awesome/css/font-awesome.css">
+</head>
+<body>
+<style>
+</style>
+<header>
+    <div style="background-color: rgba(255, 255, 255, 0.79);  padding: 8px 10px;">
+        <div class="container">
+            <div class="fl date-now"></div>
+            <div class="fr">
+                <if condition="isset($user)">
+                    <span class="mr-10">您好，{$user['name']} <a href="{:url('index/log_out')}" id="log_out">登出</a></span>
+                    <a href="{:url('user/information')}" class="mr-10">个人中心</a>
+                    <a href="{:url('user/message')}" class="color-primary"><i class="fa fa-envelope color-primary"></i>
+                        ({$message_count})</a>
+                    <else/>
+                    <span class="mr-10">您好，请 <a href="{:url('index/login')}">登录</a></span>
+                </if>
+            </div>
+            <div class="clear"></div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="fl text-right pa-20">
+            <img src="{$website['website_logo']['value']|default='/public/static/home/img/logo.png'}" alt="">
+        </div>
+        <div class="fl text-left pa-20">
+
+            <h1 class="color-primary">利津县人民检察院
+            </h1>
+            <h2 class="color-primary"> 公示 · 监督 · 学习 · 进步
+            </h2>
+        </div>
+    </div>
+</header>
+<nav>
+    <div class="container">
+        <ul>
+            <li><a href="/home/index"> 网站首页 </a></li>
+            <volist name="section_list" id="item">
+                <if condition="$item['id'] eq 3">
+                    <li><a href="{:url('index/case_list',['section_id'=>3])}">{$item.name}</a></li>
+                    <elseif condition="$item['id'] eq 2"/>
+                    <li><a href="{:url('index/party_check_list',['action'=>1])}">{$item.name}</a></li>
+                    <elseif condition="$item['id'] eq 4"/>
+                    <li>
+                        <a href="{:url('index/publish_list',['section_id'=>$item['id'],'is_home'=>'1'])}">{$item.name}</a>
+                    </li>
+                    <elseif condition="$item['id'] eq 5"/>
+                    <li><a href="{:url('index/task_list',['section_id'=>$item['id'],'is_home'=>'1'])}">{$item.name}</a>
+                    </li>
+                    <else/>
+                    <li>
+                        <a href="{:url('index/article_list',['section_id'=>$item['id'],'is_home'=>'1'])}">{$item.name}</a>
+                    </li>
+                </if>
+            </volist>
+            <li><a href="/home/index/phone_list.html"> 人员电话表 </a></li>
+        </ul>
+    </div>
+</nav>
+<div class="content">
+    <div class="container mt-15">
+        <div class=" block-box fl" style="width: 190px;">
+            <div class="block-title"><label class="color-primary">个人中心</label></div>
+            <ul class="user-menu">
+                <li><a href="{:url('user/information')}" data-menu="information">基本信息</a></li>
+                <li><a href="{:url('user/reset_password')}" data-menu="reset_password">修改密码</a></li>
+                <li><a href="{:url('user/message')}" data-menu="message">消息中心</a></li>
+                <li><a href="{:url('user/research')}" data-menu="research">信息调研</a></li>
+                <li><a href="{:url('user/task')}" data-menu="task">任务完成情况</a></li>
+                <if condition="$tf_party_member eq true">
+                    <li><a href="{:url('user/point')}" data-menu="point">党员积分</a></li>
+                </if>
+                <li><a href="{:url('user/leave')}" data-menu="leave">休假</a></li>
+                <if condition="$tf_prosecutor eq true">
+                    <li><a href="{:url('user/case_info')}" data-menu="case_info">办案情况统计</a></li>
+                </if>
+            </ul>
+        </div>
+        <div class="block-box fr" style="width: 990px;">
+            <block name="content_right">
+
+            </block>
+        </div>
+        <div class="clear"></div>
+    </div>
+</div>
+<!-- Mainly scripts -->
+<script src="/public/static/home/js/jquery.js"></script>
+<script src="/public/static/home/js/plugins/validate/jquery.validate.min.js"></script>
+<script src="/public/static/home/js/plugins/validate/messages_zh_cn.min.js"></script>
+<script src="/public/static/home/js/plugins/toastr/toastr.min.js"></script>
+
+<!-- KindEditor -->
+<script src="/public/kindeditor/kindeditor-min.js"></script>
+<script src="/public/kindeditor/plugins/code/prettify.js" charset="utf-8"></script>
+
+<script src="/public/static/home/js/ajaxfileupload.js" charset="utf-8"></script>
+
+<!-- Common scripts -->
+<script src="/public/static/home/js/common/common.js"></script>
+<block name="script">
+</block>
+<script type="text/javascript">
+    $(function () {
+        $(".date-now").html("今天是：" + new Date().Format("yyyy年MM月dd日 EEE "));
+    })
+</script>
+</body>
+</html>

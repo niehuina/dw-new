@@ -1,0 +1,41 @@
+<extend name="public/user_base"/>
+
+<block name="title"></block>
+<block name="content_right">
+    <div class="block-content pa-20">
+        <div class="font-14 mb-10">
+            个人中心 > <a href="/home/user/case_info.html">办案情况统计</a> > 办案情况明细
+        </div>
+        <table class="table-main w-100x mb-10">
+            <thead>
+            <tr>
+                <th>序号</th>
+                <th>受理日期</th>
+                <th>案件名称</th>
+                <th>案件类别</th>
+                <th>所属部门</th>
+                <th>案件状态</th>
+                <th>到期日期</th>
+                <th>办结日期</th>
+            </tr>
+            </thead>
+            <tbody>
+            <volist name="records" id="item">
+                <tr>
+                    <td>{$item.index}</td>
+                    <td>{$item.accept_time}</td>
+                    <td>{$item.name}</td>
+                    <td>{$item.type_name}</td>
+                    <td>{$item.department}</td>
+                    <td>{$item.status}</td>
+                    <td>{$item.due_time}</td>
+                    <td>{$item.over_time}</td>
+                </tr>
+            </volist>
+            </tbody>
+        </table>
+        <html:pager total="$total_page" index="$page"/>
+    </div>
+</block>
+<block name="script">
+</block>

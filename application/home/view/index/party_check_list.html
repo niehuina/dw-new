@@ -1,0 +1,64 @@
+<extend name="public/base"/>
+
+<block name="title">党务检务公开</block>
+<block name="content">
+    <div class="container breadcrumb">
+        当前位置： 网站首页 > <a href="/home/index/party_check_list/action/1.html">党务检务公开</a>
+    </div>
+    <div class="container mt-15">
+        <div class="fl" style="width: 220px;border: 1px solid #eee;padding: 20px;">
+            <a href="{:url('index/party_check_list',['action'=>1])}"
+               class="menu <if condition='$action eq 1'>active</if>">党费缴纳情况公示</a>
+            <a href="{:url('index/party_check_list',['action'=>2])}"
+               class="menu <if condition='$action eq 2'>active</if>">党员积分情况公示</a>
+        </div>
+        <div class="block-box fr" style="width: 950px;">
+            <div class="block-title"><label class="color-primary">{$action==1?'党费缴纳情况公示':'党员积分情况公示'}</label></div>
+            <div class="block-content pa-20">
+
+                <table class="table-main w-100x mb-10">
+                    <thead>
+                    <tr>
+                        <th width="20%">党组织机构</th>
+                        <th width="12%">党员姓名</th>
+                        <th width="12%">入党时间</th>
+                        <th width="10%">党龄</th>
+                        <if condition="$action eq 2">
+                            <th width="40%">当前总积分</th>
+                            <else>
+                                <th width="10%">当年应缴党费（元）</th>
+                                <th width="8%">当年已交党费月数</th>
+                                <th width="10%">当年已交党费（元）</th>
+                                <th width="10%">当年待交党费（元）</th>
+                            </else>
+                        </if>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <volist name="records" id="item">
+                        <tr>
+                            <td>{$item.organ_name}</td>
+                            <td>{$item.web_user_name}</td>
+                            <td>{$item.join_time}</td>
+                            <td>{$item.age}</td>
+                            <if condition="$action eq 2">
+                                <td>{$item.total_score}</td>
+                                <else>
+                                    <td>{$item.year_should_pay}</td>
+                                    <td>{$item.year_paid_month}</td>
+                                    <td>{$item.year_paid_money}</td>
+                                    <td>{$item.year_remaining_pay}</td>
+                                </else>
+                            </if>
+                        </tr>
+                    </volist>
+                    </tbody>
+                </table>
+                <html:pager total="$total_page" index="$page"/>
+            </div>
+        </div>
+        <div class="clear mt-15"></div>
+    </div>
+</block>
+<block name="script">
+</block>

@@ -1,0 +1,211 @@
+<div class="modal-header">
+    {$edit_state? '修改' : '新增'}
+</div>
+<div class="modal-body">
+    <form class="" role="form" id="form">
+        <input type="hidden" id="id" name="id" value="{$model.id|default=''}"/>
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="form-group">
+                    <label>用户名</label>
+                    <p>
+                        <input type="text" class="form-control" id="user_name" name="user_name"
+                               value="{$model.user_name|default=''}"
+                               autocomplete="off"/>
+                    </p>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="form-group">
+                    <label>真实姓名</label>
+                    <p>
+                        <input type="text" class="form-control" id="name" name="name"
+                               value="{$model.name|default=''}"
+                               autocomplete="off"/>
+                    </p>
+                </div>
+            </div>
+            <if condition="$edit_state eq false">
+                <div class="form-group col-sm-6">
+                    <label>密码</label>
+                    <p>
+                        <input type="password" class="form-control" id="password" name="password"
+                               autocomplete="off"/>
+                    </p>
+                </div>
+                <div class="form-group col-sm-6">
+                    <label>确认密码</label>
+                    <p>
+                        <input type="password" class="form-control" id="confirmpassword" name="confirmpassword"
+                               autocomplete="off"/>
+                    </p>
+                </div>
+            </if>
+            <div class="col-sm-6">
+                <div class="form-group">
+                    <label>角色</label>
+                    <p>
+                        <html:select name="role_id" data='role_list' class="form-control"
+                                     selected="model['role_id']" data-value="id" data-key="name"
+                                     first="请选择"/>
+                    </p>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="form-group">
+                    <label>状态</label>
+                    <p>
+                        <html:radio name="active" data='active_list' class="checkbox-initem i-checks"
+                                    checked="model['active']"/>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+    <button type="button" class="btn btn-primary" data-style="zoom-in" id="submit">提交</button>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('.i-checks').iCheck({
+            checkboxClass: 'icheckbox_square-green',
+            radioClass: 'iradio_square-green',
+        });
+        $('.input-group.date.select').datepicker({
+            todayBtn: "linked",
+            keyboardNavigation: false,
+            forceParse: false,
+            autoclose: true,
+            format: "yyyy-mm-dd",
+            language: "zh-CN",
+        });
+
+        function validate() {
+            if ($("#password")) {
+                return $("#form").validate({
+                    rules: {
+                        name: {
+                            required: true
+                        },
+                        user_name: {
+                            required: true,
+                        },
+                        password: {
+                            required: true,
+                        },
+                        confirmpassword: {
+                            required: true,
+                            equalTo: "#password"
+                        },
+                        role_id: {
+                            required: true
+                        },
+                    },
+                }).form();
+            } else {
+                return $("#form").validate({
+                    rules: {
+                        user_name: {
+                            required: true
+                        },
+                        name: {
+                            required: true
+                        },
+                        email: {
+                            required: true
+                        },
+                        role_id: {
+                            required: true
+                        },
+                    },
+                }).form();
+            }
+        }
+
+        $("#submit").click(function () {
+            if (validate()) {
+                var load_btn = Ladda.create(this);
+                load_btn.start();
+                var data = $('#form').serialize();
+                $.ajax({
+                    type: 'POST',
+                    url: "save",
+                    data: data,
+                    success: function (data) {
+                        if (check_status(data)) {
+                            $('#modal-md').modal('hide');
+                            data_table.draw();
+                        }
+                    },
+                    error: function () {
+                        toastr["error"]('Error Occurred');
+                    }
+                }).always(function () {
+                    load_btn.stop();
+                });
+            }
+        });
+        $("#achievement-add").click(function () {
+            var data = {
+                user_id: $("#id").val(),
+                type: $("#achievement-type").val(),
+                level: $("#achievement-level").val(),
+                achievement_date: $("#achievement-achievement-date").val(),
+                title: $("#achievement-title").val(),
+                description: $("#achievement-description").val(),
+            };
+            var load_btn = Ladda.create(this);
+            load_btn.start();
+            $.ajax({
+                type: 'POST',
+                url: "save_achievement",
+                data: data,
+                success: function (data) {
+                    if (check_status(data)) {
+                        $("#achievement-table tbody").append('<tr data-id="' + data.data.id + '">' +
+                            '<td>' + data.data.type + '</td>' +
+                            '<td>' + data.data.title + '</td>' +
+                            '<td>' + data.data.level + '</td>' +
+                            '<td>' + data.data.achievement_date + '</td>' +
+                            '<td>' + data.data.description + '</td>' +
+                            '<td><a onclick="delete_achievement(' + data.data.id + ')" href="javascript:void(0);"><i class="fa fa-trash"></i></a></td>');
+                    }
+                },
+                error: function () {
+                    toastr["error"]('Error Occurred');
+                }
+            }).always(function () {
+                load_btn.stop();
+            });
+        });
+    });
+
+    function delete_achievement(id) {
+        swal({
+            title: "",
+            text: "确定要删除?",
+            showCancelButton: true,
+            confirmButtonColor: "#18a689",
+            confirmButtonText: "确定",
+            cancelButtonColor: "#e6e6e6",
+            cancelButtonText: "取消"
+        }, function () {
+            $.ajax({
+                type: 'POST',
+                url: "delete_achievement",
+                data: {id: id},
+                success: function (data) {
+                    if (check_status(data)) {
+                        $('#achievement-table tr[data-id="' + id + '"]').remove();
+                    }
+                },
+                error: function () {
+                    toastr["error"]('Error Occurred');
+                }
+            });
+        });
+    };
+</script>

@@ -1,0 +1,189 @@
+<extend name="public/user_base"/>
+
+<block name="title"></block>
+<block name="content_right">
+    <div class="block-content pa-20">
+        <div class="font-14 mb-10">
+            个人中心 > <a href="/home/user/task.html">任务完成情况</a> > 提交任务
+        </div>
+        <div class="article-title">
+            {$task.title}
+        </div>
+        <form id="form" method="post">
+            <div class="w-70x">
+                <div class="form-group">
+                    <div class="fl text-right px-20" style="width: 110px;">
+                        <label>项目名称：</label>
+                    </div>
+                    <div class="fr" style="width: 550px;">
+                        <label> {$task_item.name}</label>
+
+                        <input type='hidden' id="id" name='id' value='{$task_item.id|default=""}'/>
+                    </div>
+                    <div class="clear"></div>
+                </div>
+            </div>
+            <if condition="$task_item_user.review_status eq 2">
+                <div class="w-70x  my-20">
+                    <div class="form-group">
+                        <div class="fl text-right px-20" style="width: 110px;">
+                            <label style="padding-top: 0px;">审核结论：</label>
+                        </div>
+                        <div class="fr" style="width: 550px;color:red;">
+                            {$task_item_user.review_status_name}
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                </div>
+                <div class="w-70x  my-20">
+                    <div class="form-group">
+                        <div class="fl text-right px-20" style="width: 110px;">
+                            <label style="padding-top: 0px;">审核意见：</label>
+                        </div>
+                        <div class="fr" style="width: 550px;color:red;">
+                            {$task_item_user.review_comment}
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                </div>
+            </if>
+            <div class="w-70x my-20">
+                <div class="form-group">
+                    <div class="fl text-right px-20" style="width: 110px;">
+                        <label>完成情况：</label>
+                    </div>
+                    <div class="fr" style="width: 550px;">
+                            <textarea style="height:260px;font-size: 14px;" class="form-control" id="description"
+                                      name="description">{$task_item_user.complete_description|default=""}</textarea>
+
+                    </div>
+                    <div class="clear"></div>
+                </div>
+            </div>
+            <div class="w-70x my-20">
+                <div class="form-group">
+                    <div class="fl text-right px-20" style="width: 110px;">
+                        <label style="padding-top: 0px;">附件：</label>
+                    </div>
+                    <div class="fr" style="width: 545px;text-align:left;">
+                        <a onclick="$('#file').click()" class="btn btn-default">上传附件<i class="fa fa-upload"></i></a>
+                        <p>
+                            <input type="file" id="file" name="file[]" multiple="multiple" style="display: none;"
+                                   onchange="file_change()"/>
+                        </p>
+                        <table class="table-main w-100x attach mt-15">
+                            <tbody id="files">
+                            <volist name="attachment_list" id="item">
+                                <tr data-name="{$item['attachment_name']}" data-file="{$item['attachment_url']}">
+                                    <td class="tl">
+                                        <a target="_blank" download="{$item['attachment_name']}"
+                                           href="/public/upload/task/{$item['attachment_url']}">{$item['attachment_name']}</a>
+                                    </td>
+                                    <td class="tr"><a class="close" data-path="{$item['attachment_url']}">x</a></td>
+                                </tr>
+                            </volist>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="clear"></div>
+                </div>
+            </div>
+        </form>
+        <div class="mt-15" style="width:700px;text-align: center;">
+            <button class="btn btn-primary" id="submit">提交</button>
+            <a href="{:url('user/task')}" class="btn btn-default">返回</a>
+        </div>
+    </div>
+</block>
+<block name="script">
+    <script type="text/javascript">
+        $(function () {
+            $('#submit').click(function () {
+                if ($("#description").val() == "") {
+                    toastr['error']('请输入完成情况说明');
+                    return false;
+                }
+
+                var file_list = new Array();
+                $("#files tr").each(function () {
+                    var file = new Object();
+                    file.name = $(this).data('name');
+                    file.file = $(this).data('file');
+                    file_list.push(file);
+                });
+
+                if (file_list.length == 0) {
+                    toastr['error']('请上传附件');
+                    return false;
+                }
+
+                $.ajax({
+                    type: 'POST',
+                    url: 'task_detail',
+                    data: {
+                        'id': $("#id").val(),
+                        'description': $("#description").val(),
+                        'file_list': file_list
+                    },
+                    success: function (data) {
+                        if (data.status == 0) {
+                            toastr.remove();
+                            toastr.error(data.message);
+                            return false;
+                        } else {
+                            toastr.success(data.message);
+                            window.location.href = "{:url('user/task')}";
+                        }
+                    },
+                    error: function () {
+                        toastr['error']('Error Occurred');
+                    }
+                });
+            });
+
+            $("#files").on('click', '.close', function () {
+                $.post("../../delete_file", {file_path: $(this).data('path')});
+                $(this).parent().parent().remove();
+            });
+        })
+
+        function file_change() {
+            $.ajaxFileUpload({
+                url: '../../upload_files',   //处理图片的脚本路径
+                type: 'post',       //提交的方式
+                data: {},       //提交的方式
+                secureuri: false,   //是否启用安全提交
+                fileElementId: 'file',     //file控件ID
+                dataType: 'json',  //服务器返回的数据类型
+                success: function (data) {  //提交成功后自动执行的处理函数
+                    $('#file').replaceWith('<input type="file" id="file" class="hidden" name="file[]" multiple="multiple"' +
+                        'style="display: none;" onchange="file_change()"/>');
+                    if (data.status == 1) {
+                        toastr["success"](data.message);
+                    } else {
+                        toastr["error"](data.message.replace('br', '<br>'));
+                    }
+
+                    var data_list = data.data;
+                    for (var i = 0; i < data_list.length; i++) {
+                        var item = data_list[i];
+                        if (item.success) {
+                            var $tr = $('<tr data-name="' + item.name + '" data-file="' + item.file + '">' +
+                                '<td class="tl">' +
+                                '   <a target="_blank" download="' + item.name + '"' +
+                                '       href="' + item.path + '">' + item.name + '</a></td>' +
+                                '<td class="tr"><a class="close" data-path="' + item.path + '">x</a></td>' +
+                                '</tr>');
+
+                            $("#files").append($tr);
+                        }
+                    }
+                },
+                error: function (data, status, e) {   //提交失败自动执行的处理函数
+                    toastr["error"](e);
+                }
+            })
+        }
+    </script>
+</block>

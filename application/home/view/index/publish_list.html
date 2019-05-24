@@ -1,0 +1,44 @@
+<extend name="public/base"/>
+
+<block name="title">{$section['name']}</block>
+<block name="content">
+    <div class="container breadcrumb">
+        当前位置： 网站首页 >
+        <if condition="empty($section['url'])">
+            <a href="/home/index/publish_list/section_id/{$section['id']}/is_home/1.html">{$section['name']}</a>
+            <else/>
+            <a href="{$section['url']}" target="_blank">{$section['name']}</a>
+        </if>
+    </div>
+    <div class="container mt-15">
+        <div class="fl" style="width: 220px;border: 1px solid #eee;padding: 20px;">
+            <volist name="publish_type_list" id="item">
+                <a href="{:url('index/publish_list',['type_id'=>$item['id']])}"
+                   class="menu <if condition='$item.id eq $publish_type.id'>active</if>">{$item.name}</a>
+            </volist>
+        </div>
+        <div class="block-box fr" style="width: 950px;">
+            <div class="block-title"><label class="color-primary">{$publish_type['name']}</label></div>
+            <div class="block-content pa-20">
+                <ul class="article-list">
+                    <volist name="section_info_list" id="item">
+                        <li class="bg-icon-0 mb-10">
+                            <div class="fl">
+                                <a class="articleid" title="{$item.title}"
+                                   href="{:url('index/publish_detail',['id'=>$item['id']])}">
+                                    【{$item.level_name}】{$item.title}
+                                </a>
+                            </div>
+                            <div class="fr"><span class="time">{$item.publish_time}</span></div>
+                            <div class="clear"></div>
+                        </li>
+                    </volist>
+                </ul>
+                <html:pager total="$total_page" index="$page"/>
+            </div>
+        </div>
+        <div class="clear mt-15"></div>
+    </div>
+</block>
+<block name="script">
+</block>

@@ -1,0 +1,107 @@
+<div class='modal-header'>
+    项目完成情况审核
+</div>
+<div class='modal-body '>
+    <form class='' role='form' id='form'>
+        <input type='hidden' name='id' value='{$model.id|default=""}'/>
+        <input type='hidden' name='task_id' value='{$model.task_id|default=""}'/>
+        <div class='row'>
+            <div class='col-sm-12'>
+                <div class='form-group'>
+                    <label>完成说明</label>
+                    <p>
+                        {$model['complete_description']}
+                    </p>
+                </div>
+            </div>
+            <div class='col-sm-12'>
+                <div class='form-group'>
+                    <label>附件</label>
+                    <p>
+                        <volist name="attachment_list" id="item">
+                    <p><a target="_blank" href="/public/upload/task/{$item['attachment_url']}"
+                          download="{$item['attachment_name']}">{$item['attachment_name']}</a></p>
+                    </volist>
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class='row'>
+            <div class='col-sm-12'>
+                <div class='form-group' style="min-height: 40px">
+                    <p>
+                        <html:radio id="review_status" name="review_status" data='review_status_list'
+                                    class="checkbox-initem i-checks"
+                                    checked="model['review_status']"/>
+                    </p>
+                    <label id="review_status-error" class="error hidden" for="review_status">这是必填字段</label>
+                </div>
+            </div>
+            <div class='col-sm-12'>
+                <div class='form-group'>
+                    <label>审核意见</label>
+                    <p>
+                        <textarea id="review_comment" name="review_comment" class="form-control" style="height: 100px;">{$model['review_comment']}</textarea>
+                    </p>
+                </div>
+            </div>
+
+        </div>
+    </form>
+</div>
+<div class='modal-footer'>
+    <button type='button' class='btn btn-default' data-dismiss='modal'>取消</button>
+    <button type='button' class='btn btn-primary' data-style='zoom-in' id='submit'>提交</button>
+</div>
+
+<script type='text/javascript'>
+    $(document).ready(function () {
+        $('.i-checks').iCheck({
+            checkboxClass: 'icheckbox_square-green',
+            radioClass: 'iradio_square-green',
+        }).on('ifChanged', function (event) {
+            $("#review_comment").val('');
+        });
+
+        function validate() {
+            return $('#form').validate({
+                rules: {
+                    review_comment: {
+                        required: true,
+                    },
+                },
+            }).form();
+        }
+
+        $('#submit').click(function () {
+            if (typeof ($("input[name='review_status']:radio:checked").val()) == "undefined") {
+                $("#review_status-error").removeClass('hidden');
+                return false;
+            } else {
+                $("#review_status-error").addClass('hidden');
+            }
+
+            if (validate()) {
+                var load_btn = Ladda.create(this);
+                load_btn.start();
+                var data = $('#form').serialize();
+                $.ajax({
+                    type: 'POST',
+                    url: 'save',
+                    data: data,
+                    success: function (data) {
+                        if (check_status(data)) {
+                            $('#modal-md').modal('hide');
+                            data_table.draw();
+                        }
+                    },
+                    error: function () {
+                        toastr['error']('Error Occurred');
+                    }
+                }).always(function () {
+                    load_btn.stop();
+                });
+            }
+        });
+    });
+</script>

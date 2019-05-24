@@ -1,0 +1,31 @@
+<extend name="public/user_base"/>
+
+<block name="title"></block>
+<block name="content_right">
+    <div class="block-content pa-20">
+        <div class="font-14 mb-10">
+            个人中心 > <a href="#">办案情况统计</a>
+        </div>
+        <table class="table-main w-100x mt-30">
+            <thead>
+            <tr>
+                <th>办案数量</th>
+                <th>分管/协管/所在业务部门</th>
+                <th style="width: 500px">办案分类统计</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            <volist name="records" id="item">
+                <td>{$item['case_count']}</td>
+                <td>{$item['depart_name']}</td>
+                <td>{$item['type_name']}</td>
+                <td><a data-menu="case_info" class="btn btn-primary px-20 fr" href="{:url('user/case_detail',['ref'=>'case_info'])}">明细</a></td>
+            </volist>
+            </tbody>
+        </table>
+        <html:pager total="$total_page" index="$page"/>
+    </div>
+</block>
+<block name="script">
+</block>

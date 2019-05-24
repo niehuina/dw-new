@@ -1,0 +1,51 @@
+<extend name="public/base"/>
+
+<block name="title">{$section['name']}</block>
+<block name="content">
+    <div class="container breadcrumb">
+        当前位置： 网站首页 >
+        <if condition="empty($section['url'])">
+            <a href="/home/index/task_list/section_id/{$section['id']}/is_home/1.html">{$section['name']}</a>
+            <else/>
+            <a href="{$section['url']}" target="_blank">{$section['name']}</a>
+        </if>
+    </div>
+    <div class="container mt-15">
+        <div class="fl" style="width: 220px;border: 1px solid #eee;padding: 20px;">
+            <volist name="task_type_list" id="item">
+                <a href="{:url('index/task_list',['type_id'=>$item['id']])}"
+                   class="menu <if condition='$item.id eq $task_type.id'>active</if>">{$item.name}</a>
+            </volist>
+        </div>
+        <div class="block-box fr" style="width: 950px;">
+            <div class="block-title"><label class="color-primary">{$task_type['name']}任务完成情况公示</label></div>
+            <div class="block-content pa-20">
+
+                <table class="table-main w-100x mb-10">
+                    <thead>
+                    <tr>
+                        <th>任务名称（点击查看详情）</th>
+                        <th width="100">任务状态</th>
+                        <th width="160">到期日期</th>
+                        <th width="160">发布日期</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <volist name="task_list" id="item">
+                        <tr>
+                            <td style="text-align:left;"><a href="{:url('index/task_detail',['id'=>$item['id']])}">{$item.title}</a></td>
+                            <td style="color:{$item.task_status_color};">{$item.task_status}</td>
+                            <td>{$item.end_time}</td>
+                            <td>{$item.publish_time}</td>
+                        </tr>
+                    </volist>
+                    </tbody>
+                </table>
+                <html:pager total="$total_page" index="$page"/>
+            </div>
+        </div>
+        <div class="clear mt-15"></div>
+    </div>
+</block>
+<block name="script">
+</block>

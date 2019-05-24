@@ -1,0 +1,104 @@
+<extend name="public/base"/>
+
+<block name="title"></block>
+<block name="content">
+    <div class="container mb-10">
+        <div class="block-box" style="width: 400px; margin: 0 auto; margin-top: 50px; ">
+            <div class="block-title text-center"><label class="color-primary">用户登录</label></div>
+            <div class="block-content pa-40">
+                <form id="form">
+                    <div class="form-group">
+                        <label for="">用户名</label>
+                        <div>
+                            <input class="form-control required" type="text" id="user_name" name="user_name">
+                        </div>
+                    </div>
+                    <div class="form-group mt-15">
+                        <label for="">密码</label>
+                        <div>
+                            <input class="form-control" type="password" id="password" name="password">
+                        </div>
+                    </div>
+                    <div class="text-right mt-15">
+                        <a href="{:url('index/forgot_password')}">忘记密码</a>
+                    </div>
+                </form>
+                <div class="text-center mt-15">
+                    <a class="btn btn-primary px-30" id="submit">登录</a>
+                </div>
+
+            </div>
+        </div>
+        <div class="clear mt-15"></div>
+    </div>
+</block> 李四
+<block name="script">
+    <!-- Mainly scripts -->
+    <script src="/public/static/home/js/jquery.js"></script>
+    <script src="/public/static/home/js/plugins/validate/jquery.validate.min.js"></script>
+    <script src="/public/static/home/js/plugins/toastr/toastr.min.js"></script>
+    <script>
+        $(function () {
+            function validate() {
+                return $("#form").validate({
+                    rules: {
+                        user_name: {
+                            required: true,
+                        },
+                        password: {
+                            required: true,
+                        },
+                    },
+                    errorPlacement: function (error, element) {
+                    },
+                    showErrors: function (errorMap, errorList) {
+                        if (errorList.length > 0) {
+                            toastr.remove();
+                            toastr.error('请输入用户名密码');
+                        }
+                        this.defaultShowErrors();
+                    }
+                }).form();
+            }
+
+            $("input[name='user_name']").focus();
+
+            $("input[name='user_name']").keydown(function (e) {
+                if ($(this).val() != '' && e.which == 13) {
+                    $("input[name='password']").focus();
+                }
+            });
+            $("input[name='password']").keydown(function (e) {
+                if ($(this).val() != '' && e.which == 13) {
+                    $("#submit").click();
+                }
+            });
+            $("#submit").click(function () {
+                if (validate()) {
+                    $.ajax({
+                        type: 'POST',
+                        url: "login",
+                        data: {
+                            user_name: $("#user_name").val(),
+                            password: $("#password").val(),
+                        },
+                        success: function (data) {
+                            if (data.status == 0) {
+                                toastr.remove();
+                                toastr.error(data.message);
+                                return false;
+                            } else {
+                                window.location.href = '/home/index';
+                            }
+                        },
+                        error: function () {
+                            toastr.remove();
+                            toastr.error('Error Occurred');
+                        }
+                    });
+                }
+            });
+        });
+
+    </script>
+</block>

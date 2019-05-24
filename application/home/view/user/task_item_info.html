@@ -1,0 +1,83 @@
+<extend name="public/user_base"/>
+
+<block name="title"></block>
+<block name="content_right">
+    <div class="block-content pa-20">
+        <div class="font-14 mb-10">
+            个人中心 > <a href="{:url('user/task')}">任务完成情况</a> > 查看
+        </div>
+        <div class="article-title">
+            {$task.title}
+        </div>
+        <form id="form" method="post">
+            <div class="w-70x my-20">
+                <div class="form-group">
+                    <div class="fl text-right px-20" style="width: 110px;">
+                        <label style="padding-top: 0px;">项目名称：</label>
+                    </div>
+                    <div class="fr" style="width: 550px;text-align:left;">
+                        {$task_item.name}
+                        <input type='hidden' id="id" name='id' value='{$task_item.id|default=""}'/>
+                    </div>
+                    <div class="clear"></div>
+                </div>
+            </div>
+            <if condition="$task_item_user.review_status eq 3">
+                <div class="w-70x my-20">
+                    <div class="form-group">
+                        <div class="fl text-right px-20" style="width: 110px;">
+                            <label style="padding-top: 0px;">审核意见：</label>
+                        </div>
+                        <div class="fr" style="width: 550px;text-align:left;">
+                            {$task_item_user.review_comment}
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                </div>
+            </if>
+            <div class="w-70x my-20">
+                <div class="form-group">
+                    <div class="fl text-right px-20" style="width: 100px;">
+                        <label style="padding-top: 0px;">完成情况:</label>
+                    </div>
+                    <div class="fr" style="width: 550px;text-align:left;">
+                        {$task_item_user.complete_description|default=""}
+                    </div>
+                    <div class="clear"></div>
+                </div>
+            </div>
+
+            <div class="w-70x my-20">
+                <div class="form-group">
+                    <div class="fl text-right px-20" style="width: 110px;">
+                        <label style="padding-top: 0px;">附件：</label>
+                    </div>
+                    <div class="fr" style="width: 550px;text-align:left;">
+                        <table class="table-main w-100x attach">
+                            <tbody id="files">
+                            <volist name="attachment_list" id="item">
+                                <tr data-name="{$item['attachment_name']}" data-file="{$item['attachment_url']}">
+                                    <td class="tl">
+                                        <a target="_blank" download="{$item['attachment_name']}"
+                                           href="/public/upload/task/{$item['attachment_url']}">{$item['attachment_name']}</a>
+                                    </td>
+                                </tr>
+                            </volist>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="clear"></div>
+                </div>
+            </div>
+        </form>
+        <div class="clear"></div>
+        <div class="w-70x" style="width:700px;text-align: center;">
+            <div class="form-group">
+                <br>
+                <a href="{:url('user/task')}" class="btn btn-default">返回</a>
+            </div>
+        </div>
+    </div>
+</block>
+<block name="script">
+</block>

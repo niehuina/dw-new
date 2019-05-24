@@ -1,0 +1,109 @@
+<extend name='public/base'/>
+
+<block name='title'>休假统计</block>
+<block name='content'>
+    <div class='row wrapper border-bottom white-bg page-heading'>
+        <div class='col-lg-6'>
+            <h2>休假统计</h2>
+            <ol class='breadcrumb'>
+                <li>
+                    <a>休假管理</a>
+                </li>
+                <li class='active'>
+                    <strong>休假统计</strong>
+                </li>
+            </ol>
+        </div>
+        <div class='col-lg-6'>
+        </div>
+    </div>
+    <div class='wrapper wrapper-content '>
+        <div class='row'>
+            <div class='col-lg-12'>
+                <div class='ibox float-e-margins'>
+                    <div class='ibox-title'>
+                        <h5>休假统计</h5>
+                    </div>
+                    <div class='ibox-content'>
+                        <div class="row">
+                            <div class="col-sm-3">
+
+                                <div class="form-group">
+                                    <div class="input-group m-b">
+                                        <input type="text" class="form-control" id="search-keyword"
+                                               placeholder="人员姓名">
+                                        <span class="input-group-btn">
+                                            <button type="button" id="search-button" class="btn btn-primary">查询</button> </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-9 text-right">
+                                <button type="button" id="export-btn" class="btn btn-primary">导出Excel</button>
+                            </div>
+                        </div>
+                        <div class='table-responsive'>
+                            <table id='data-table' style='width:100%;'
+                                   class='table table-striped table-hover dataTables-example dataTable border-bottom'
+                                   role='grid'>
+                                <thead>
+                                <tr role='row'>
+                                    <th>人员姓名</th>
+                                    <th>部门</th>
+                                    <th>职务</th>
+                                    <th>已休年假天数</th>
+                                    <th>剩余年假天数</th>
+                                    <th>已休病假天数</th>
+                                    <th style="width:100px;"></th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</block>
+<block name='script'>
+    <script type='text/javascript'>
+        $(document).ready(function () {
+            var query = function (params) {
+                params.query = $('#search-keyword').val();
+            };
+            var columns = [
+                {'data': 'user_name'},
+                {'data': 'orgin_name'},
+                {'data': 'position_ids'},
+                {'data': 'vacation_days'},
+                {'data': 'overplus_vacation'},
+                {'data': 'total_sick_vacation_days'},
+                {
+                    "data": null,
+                    "render": function (data) {
+                        return '<a data-toggle="modal" data-target="#modal-lg" title="双击行也可以查看详情" href="_show_detail/web_user_id/' + data.web_user_id + '.html">休假详情</a>' +
+                            '<input type="hidden" class="web_user_id" value="' + data.web_user_id + '">';
+                    }
+                }
+            ];
+            load_list(query, columns);
+
+            $('#data-table tbody').on('dblclick', 'tr', function () {
+                var web_user_id = $(this).find('.web_user_id').val();
+                $('#data-table tbody tr').removeClass('info');
+                $(this).toggleClass('info');
+                $('#modal-lg').modal({
+                    backdrop: true,
+                    keyboard: true,
+                    remote: "_show_detail/web_user_id/" + web_user_id + ".html"
+                });
+
+            });
+            $('#export-btn').click(function () {
+                window.location.href = "export_data?query=" + $('#search-keyword').val();
+            });
+        });
+
+    </script>
+</block>

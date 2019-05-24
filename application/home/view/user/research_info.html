@@ -1,0 +1,31 @@
+<extend name="public/user_base"/>
+
+<block name="title"></block>
+<block name="content_right">
+    <div class="block-content pa-20">
+        <div class="font-14 mb-10">
+            个人中心 > <a href="{:url('user/research')}"> 信息调研宣传公示</a> > 查看
+        </div>
+        <form id="form" enctype="multipart/form-data">
+            <div class="block-content pa-20">
+                <div class="article-title">
+                    {$section_info.title}
+                </div>
+                <div class="article-information">
+                    <span>分类:{$publish_type.name}</span>
+                    <span>公示级别:{$section_info.level_name}</span>
+                    <span>发布时间:{$section_info.publish_time}</span>
+                </div>
+                <div class="article-summary">
+                    {$section_info.summary}
+                </div>
+                <div class="article-content">
+                    {$section_info.content}
+                </div>
+            </div>
+        </form>
+        <div class="clear"></div>
+    </div>
+</block>
+<block name="script">
+</block>

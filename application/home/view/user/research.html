@@ -1,0 +1,55 @@
+<extend name="public/user_base"/>
+
+<block name="title"></block>
+<block name="content_right">
+    <div class="block-content pa-20">
+        <div class="font-14 mb-10">
+            个人中心 > <a href="#">信息调研宣传公示</a>
+
+            <a href="{:url('user/research_detail')}" class="btn btn-primary px-20 fr">发布调研</a>
+        </div>
+        <table class="table-main w-100x mt-30">
+            <thead>
+            <tr>
+                <th>标题</th>
+                <th width="160">提交时间</th>
+                <th width="90">状态</th>
+                <th width="100">操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            <volist name="records" id="item">
+                <tr id="{$item.id}" data-url="{:url('user/research_detail', ['id'=>$item.id])}" style="width: 1000px;">
+                    <td class="fl">【{$item.level_name}】{$item.title}</td>
+                    <td>{$item.publish_time}</td>
+                    <td>{$item.review_status_name}</td>
+                    <td>
+                        <if condition="$item.review_status neq 3">
+                            <a href="{:url('user/research_detail',['id'=>$item.id])}">
+                                <if condition="$item.review_status neq 3">
+                                    重新提交
+                                    <else/>
+                                    提交
+                                </if>
+                            </a>
+                            <else/>
+                            <a target="_blank" href="{:url('user/research_info',['id'=>$item.id])}">查看</a>
+                        </if>
+                    </td>
+                </tr>
+            </volist>
+            </tbody>
+        </table>
+        <html:pager total="$total_page" index="$page"/>
+    </div>
+</block>
+<block name="script">
+    <script type="text/javascript">
+        $(function () {
+            $("table tbody tr").dblclick(function () {
+                var url = $(this).data('url');
+                window.location.href = url;
+            });
+        });
+    </script>
+</block>

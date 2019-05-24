@@ -1,0 +1,273 @@
+<extend name="public/base"/>
+
+<block name="title"></block>
+<block name="content">
+
+    <div class="container"
+         style="position:relative; margin-top:15px;border:1px solid #eeeeee;height: 40px; background: url(/public/static/home/img/bg_notice.png)">
+        <div class="color-primary h3 font-bold" style="position: absolute;top: 10px;left: 20px;">办案公示</div>
+        <if condition="empty($sec_list[3])">
+            <a class="more" href="{:url('index/case_list',['section_id'=>3])}">更多</a>
+            <else/>
+            <a class="more" href="{$sec_list[3]}" target="_blank">更多</a>
+        </if>
+        <div id="scroll_left" class="color-primary"
+             style="width: 1000px;padding: 0 40px; margin-left: 100px; font-size: 14px; height: 40px; overflow: hidden;position: relative">
+            <ul style="white-space: nowrap; position: absolute;left: 0;top: 10px;">
+                <volist name="case_list" id="item">
+                    <li class="bg-icon-0 mr-20 d-inline">
+                        <a class=""
+                           href="{:url('index/case_detail',['id'=>$item['id']])}">
+                            {$item.name}
+                        </a>
+                    </li>
+                </volist>
+            </ul>
+        </div>
+    </div>
+    <div class="container mt-15">
+        <div class="fl" style="height: 315px;width: 760px;">
+            <div id="banner" class="slideBox" style="width: 760px; height: 315px;">
+                <ul class="items">
+                    <volist name="banner_list" id="banner">
+                        <li><a href="{$banner.redirect_url}" title="{$banner.title}"><img src="{$banner.picture_url}"
+                                                                                          width="760" height="315"></a>
+                        </li>
+                    </volist>
+                </ul>
+            </div>
+        </div>
+        <div class="fr" style="width: 420px; height: 315px ">
+            <div class="block-box" style="height: 315px;">
+                <div class="block-title">
+                    <label class="color-primary">出庭公告</label><span></span>
+                    <if condition="empty($sec_list[7])">
+                        <a class="more" href="{:url('index/article_list',['section_id'=>7])}">更多</a>
+                        <else/>
+                        <a class="more" href="{$sec_list[7]}" target="_blank">更多</a>
+                    </if>
+                </div>
+                <div class="block-content">
+                    <ul>
+                        <volist name="publicity_court_list" id="item">
+                            <li class="bg-icon-0 mb-12">
+                                <div class="fl">
+                                    <a class="article-link w-250" title="{$item.title}"
+                                       href="{:url('index/article_detail',['id'=>$item['id']])}">
+                                        {$item.title}
+                                    </a>
+                                </div>
+                                <div class="fr"><span
+                                        class="time">{$item.publish_time|strtotime|date='Y-m-d',###}</span></div>
+                                <div class="clear"></div>
+                            </li>
+                        </volist>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="clear"></div>
+    </div>
+    <div class="container mt-15">
+        <div class="fl" style="height: 410px;width: 590px;">
+            <div class="block-box" style="height: 410px;">
+                <div class="block-title">
+                    <label class="color-primary">新闻资讯</label><span></span>
+                    <if condition="empty($sec_list[6])">
+                        <a class="more" href="{:url('index/article_list',['section_id'=>6,'is_home'=>'1'])}">更多</a>
+                        <else/>
+                        <a class="more" href="{$sec_list[6]}" target="_blank">更多</a>
+                    </if>
+                </div>
+                <div class="block-content pl-30">
+                    <ul>
+                        <volist name="news_list" id="item">
+                            <eq name="i" value="1">
+                                <li class="mb-12">
+                                    <div class="fl">
+                                        <a title="{$item.title}"
+                                           href="{:url('index/article_detail',['id'=>$item['id']])}">
+                                            <img src="{$item.picture_url}" width="130" height="90">
+                                        </a>
+                                    </div>
+                                    <div class="fr" style="width: 390px;line-height: 1.5;">
+                                        <a class="font-18 font-bold d-block" title="{$item.title}"
+                                           href="{:url('index/article_detail',['id'=>$item['id']])}">
+                                            {$item.title|sub_str_title=###,40}
+                                        </a>
+                                        <p style=" font-size: 13px; color: #989898">
+                                            {$item.summary|sub_str_title=###,50}
+                                            <a class="color-primary"
+                                               title="{$item.title}"
+                                               href="{:url('index/article_detail',['id'=>$item['id']])}">
+                                                【详细】
+                                            </a>
+                                        </p>
+                                    </div>
+                                    <div class="clear"></div>
+                                </li>
+                                <else/>
+                                <li class=" mb-12">
+                                    <div class="fl">
+                                        <a class="article-link" title="{$item.title}"
+                                           href="{:url('index/article_detail',['id'=>$item['id']])}">
+                                            {$item.title}
+                                        </a>
+                                    </div>
+                                    <div class="fr"><span
+                                            class="time">{$item.publish_time|strtotime|date='Y-m-d',###}</span></div>
+                                    <div class="clear"></div>
+                                </li>
+                            </eq>
+                        </volist>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="fr" style="height: 410px;width: 590px;">
+            <div class="block-box" style="height: 410px;">
+                <div class="block-title">
+                    <label class="color-primary">党内政治生活</label><span></span>
+                    <if condition="empty($sec_list[1])">
+                        <a class="more" href="{:url('index/article_list',['section_id'=>1,'is_home'=>'1'])}">更多</a>
+                        <else/>
+                        <a class="more" href="{$sec_list[1]}" target="_blank">更多</a>
+                    </if>
+                </div>
+                <div class="block-content  pl-30">
+                    <ul>
+                        <volist name="politic_life_list" id="item">
+                            <eq name="i" value="1">
+                                <li class="mb-12">
+                                    <div class="fl">
+                                        <a title="{$item.title}"
+                                           href="{:url('index/article_detail',['id'=>$item['id']])}">
+                                            <img src="{$item.picture_url}" width="130" height="90">
+                                        </a>
+                                    </div>
+                                    <div class="fr" style="width: 390px;line-height: 1.5;">
+                                        <a class="font-18 font-bold d-block" title="{$item.title}"
+                                           href="{:url('index/article_detail',['id'=>$item['id']])}">
+                                            {$item.title|sub_str_title=###,40}
+                                        </a>
+                                        <p style=" font-size: 13px; color: #989898">
+                                            {$item.summary|sub_str_title=###,50}
+                                            <a class="color-primary"
+                                               title="{$item.title}"
+                                               href="{:url('index/article_detail',['id'=>$item['id']])}">
+                                                【详细】
+                                            </a>
+                                        </p>
+                                    </div>
+                                    <div class="clear"></div>
+                                </li>
+                                <else/>
+                                <li class="mb-12">
+                                    <div class="fl">
+                                        <a class="article-link" title="{$item.title}"
+                                           href="{:url('index/article_detail',['id'=>$item['id']])}">
+                                            {$item.title}
+                                        </a>
+                                    </div>
+                                    <div class="fr"><span
+                                            class="time">{$item.publish_time|strtotime|date='Y-m-d',###}</span></div>
+                                    <div class="clear"></div>
+                                </li>
+                            </eq>
+                        </volist>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="clear"></div>
+    </div>
+    <div class="container mt-15" style="">
+        <div class="fr" style="height: 320px;width: 590px;">
+            <div class="block-box" style="height: 320px;">
+                <div class="block-title">
+                    <label class="color-primary">信息调研宣传公示</label><span></span>
+                    <if condition="empty($sec_list[4])">
+                        <a class="more" href="{:url('index/publish_list',['section_id'=>4,'is_home'=>'1'])}">更多</a>
+                        <else/>
+                        <a class="more" href="{$sec_list[4]}" target="_blank">更多</a>
+                    </if>
+                </div>
+                <div class="block-content  pl-30">
+                    <ul>
+                        <volist name="publish_info_list" id="item">
+                            <li class="mb-12">
+                                <div class="fl">
+                                    <a class="article-link" title="{$item.title}"
+                                       href="{:url('index/publish_detail',['id'=>$item['id']])}">
+                                        {$item.title}
+                                    </a>
+                                </div>
+                                <div class="fr"><span
+                                        class="time">{$item.publish_time|strtotime|date='Y-m-d',###}</span></div>
+                                <div class="clear"></div>
+                            </li>
+                        </volist>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="fl" style="height: 320px;width: 590px;">
+            <div class="block-box" style="height: 320px;">
+                <div class="block-title">
+                    <label class="color-primary">任务分配监督公示</label><span></span>
+                    <if condition="empty($sec_list[5])">
+                        <a class="more" href="{:url('index/task_list',['section_id'=>5,'is_home'=>'1'])}">更多</a>
+                        <else/>
+                        <a class="more" href="{$sec_list[5]}" target="_blank">更多</a>
+                    </if>
+                </div>
+                <div class="block-content  pl-30">
+                    <ul>
+                        <volist name="task_list" id="item">
+                            <li class=" mb-12">
+                                <div class="fl">
+                                    <a class="article-link" title="{$item.title}"
+                                       href="{:url('index/task_detail',['id'=>$item['id']])}">
+                                        {$item.title}
+                                    </a>
+                                </div>
+                                <div class="fr"><span
+                                        class="time">{$item.publish_time|strtotime|date='Y-m-d',###}</span></div>
+                                <div class="clear"></div>
+                            </li>
+                        </volist>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="clear"></div>
+    </div>
+</block>
+<block name="script">
+    <script>
+        $(function () {
+            var num = 0;
+
+            function go_left() {
+                if (num < (1000 - $("#scroll_left ul").width())) {
+                    num = 0;
+                }
+                num -= 1;
+                $("#scroll_left ul").css({
+                    left: num
+                })
+            }
+
+            var timer = setInterval(go_left, 50);
+            $("#scroll_left").hover(function () {
+                    clearInterval(timer);
+                },
+                function () {
+                    timer = setInterval(go_left, 50);
+                });
+
+            $('#banner').slideBox();
+        });
+
+    </script>
+</block>

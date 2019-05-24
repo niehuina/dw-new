@@ -1,0 +1,113 @@
+<div class='modal-header'>
+    {$edit_state? '修改' : '新增'}
+</div>
+<div class='modal-body '>
+    <form class='' role='form' id='form'>
+        <input type='hidden' name='id' value='{$model.id|default=""}'/>
+        <div class='row'>
+            <div class='col-sm-6'>
+                <div class='form-group'>
+                    <label>栏目名称</label>
+                    <p><input type='text' class='form-control' id='name' name='name' value='{$model.name|default=""}'
+                              autocomplete='off'/></p>
+                </div>
+            </div>
+            <if condition="$model.id gt 5 or $model eq null">
+                <div class='col-sm-6'>
+                    <div class='form-group'>
+                        <label>上级栏目</label>
+                        <p>
+                            <html:select id="parent_id" name="parent_id" data='section_list' class="form-control"
+                                         data-key="name" data-value="id" selected="model['parent_id']" first="请选择"/>
+                        </p>
+                    </div>
+                </div>
+                <else/>
+                <input type="hidden" id="parent_id" name="parent_id" value="0">
+            </if>
+            <div class='col-sm-6'>
+                <div class='form-group'>
+                    <label>排序</label>
+                    <p><input type='text' class='form-control' id='sort' name='sort' value='{$model.sort|default=""}'
+                              autocomplete='off'/></p>
+                </div>
+            </div>
+            <div class='col-sm-6'>
+                <div class='form-group'>
+                    <label>首页显示</label>
+                    <p>
+                        <html:radio name="tf_show_index" data='yn_list' class="checkbox-initem i-checks"
+                                    checked="default_yn"/>
+                    </p>
+                </div>
+            </div>
+            <div class='col-sm-12'>
+                <div class='form-group'>
+                    <label>栏目跳转网址</label>
+                    <p><input type='text' class='form-control' id='url' name='url' value='{$model.url|default=""}'
+                              autocomplete='off'/></p>
+                </div>
+            </div>
+
+        </div>
+    </form>
+</div>
+<div class='modal-footer'>
+    <button type='button' class='btn btn-default' data-dismiss='modal'>取消</button>
+    <button type='button' class='btn btn-primary' data-style='zoom-in' id='submit'>提交</button>
+</div>
+
+<script type='text/javascript'>
+    $(document).ready(function () {
+
+        $('.i-checks').iCheck({
+            checkboxClass: 'icheckbox_square-green',
+            radioClass: 'iradio_square-green',
+        });
+        function validate() {
+            return $('#form').validate({
+                rules: {
+                    name: {
+                        required: true,
+                    }, tf_show_index: {
+                        required: true,
+                    }, sort: {
+                        required: true,
+                        number:true,
+                    }, url: {
+                        url:true
+                    }
+                },
+                messages:{
+                    url: {
+                        url:"请输入有效的网址,例如<br/>http://xxx.xxx或https://xxx.xxx"
+                    }
+                }
+            }).form();
+        }
+
+        $('#submit').click(function () {
+            if (validate()) {
+                var load_btn = Ladda.create(this);
+                load_btn.start();
+                var data = $('#form').serialize();
+                $.ajax({
+                    type: 'POST',
+                    url: 'save',
+                    data: data,
+                    success: function (data) {
+                        if (check_status(data)) {
+                            $('#modal-md').modal('hide');
+                            data_table.draw();
+                        }
+                    },
+                    error: function () {
+                        toastr['error']('Error Occurred');
+                    }
+                }).always(function () {
+                    load_btn.stop();
+                });
+            }
+        });
+    });
+</script>

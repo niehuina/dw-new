@@ -1,0 +1,71 @@
+<extend name="public/user_base"/>
+
+<block name="title"></block>
+<block name="content_right">
+    <div class="block-content pa-20">
+        <div class="font-14 mb-10">
+            个人中心 > <a href="#">基本信息</a>
+        </div>
+        <div class="w-50x fl px-20">
+            <div class="form-group">
+                <label for="">用户名</label>
+                <div>
+                    <span class="form-control">{$user->user_name}</span>
+                </div>
+            </div>
+        </div>
+        <div class="w-50x fl px-20">
+            <div class="form-group">
+                <label for="">手机号</label>
+                <div>
+                    <span class="form-control">{$user->phone}</span>
+                </div>
+            </div>
+        </div>
+        <div class="w-50x fl px-20">
+            <div class="form-group">
+                <label for="">身份证号</label>
+                <div>
+                    <span class="form-control">{$user->id_number}</span>
+                </div>
+            </div>
+        </div>
+        <div class="w-50x fl px-20">
+            <div class="form-group">
+                <label for="">部门</label>
+                <div>
+                    <span class="form-control">{$dep_name}</span>
+                </div>
+            </div>
+        </div>
+        <div class="w-50x fl px-20">
+            <div class="form-group">
+                <label for="">职务</label>
+                <div>
+                    <span class="form-control">{$user->position_names}</span>
+                </div>
+            </div>
+        </div>
+        <if condition="$isPM">
+            <div class="w-50x fl px-20">
+                <div class="form-group">
+                    <label for="">党组织</label>
+                    <div>
+                        <span class="form-control">{$pm_organ->name}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="w-50x fl px-20">
+                <div class="form-group">
+                    <label for="">入党时间</label>
+                    <div>
+                        <span class="form-control">{$pm_organ->join_time}</span>
+                    </div>
+                </div>
+            </div>
+        </if>
+        <div class="clear"></div>
+    </div>
+</block>
+<block name="script">
+</block>

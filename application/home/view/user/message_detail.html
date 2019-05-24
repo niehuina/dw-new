@@ -1,0 +1,27 @@
+<extend name="public/user_base"/>
+
+<block name="title"></block>
+<block name="content_right">
+    <div class="block-content pa-20">
+        <div class="font-14 mb-10">
+            个人中心 > <a href="/home/user/message.html">消息中心</a> > 正文
+
+        </div>
+        <div class="block-box fr" style="width: 100%;">
+            <div class="block-content pa-20">
+                <div class="article-title">
+                    {$message_info.subject}
+                </div>
+                <div class="article-information">
+                    <span>接收时间:{$message_info.created_time}</span>
+                </div>
+
+                <div class="article-content">
+                    {$message_info.content}
+                </div>
+            </div>
+        </div>
+    </div>
+</block>
+<block name="script">
+</block>

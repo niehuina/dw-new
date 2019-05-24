@@ -1,0 +1,76 @@
+
+
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal">
+        <span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+    </button>
+    办案信息导入
+</div>
+<div class="modal-body ">
+    <!-- form begin -->
+    <form enctype="multipart/form-data" role="form" id="form">
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="form-group">
+                    <label>导入文件</label>
+                    <input name="import_file" type="file" name="excel" accept=".xls,.xlsx" />
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="form-group text-danger" style="min-height: 50px;">
+                    <a href="__TEMPLATE__/办案信息导入模板.xlsx">点击下载导入模板 </a>
+                    <p>备注：案件名称、部门受案号、受理时间、办案部门必填, 检察官姓名必须是系统中真实存在的检察官</p>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12" style="overflow-y:auto; height:300px;">
+                <div class="form-group text-danger">
+                    <p class="error"></p>
+                </div>
+            </div>
+        </div>
+    </form>
+    <!-- form end -->
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+    <button type="button" class="btn btn-primary" data-style="zoom-in" id="submit">提交</button>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#submit").click(function () {
+            var load_btn = Ladda.create(this);
+            load_btn.start();
+
+            var form_data = new FormData($('#form')[0]);
+            $.ajax({
+                type: 'POST',
+                url: "import",
+                data: form_data,
+                processData : false,
+                contentType : false,
+                success: function (data) {
+                    if (data.status == 1) {
+                        toastr["success"](data.message);
+                        $('#modal-md').modal('hide');
+                        data_table.draw();
+                    }else if(data.status == 0){
+                        toastr["error"](data.message);
+                    }
+                    else {
+                        $(".error")[0].innerText = data.message;
+                    }
+                },
+                error: function () {
+                    toastr["error"]('连接失败');
+                }
+            }).always(function () {
+                load_btn.stop();
+            });
+        });
+    });
+</script>

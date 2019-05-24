@@ -1,0 +1,43 @@
+<extend name="public/base"/>
+
+<block name="title"></block>
+<block name="content">
+    <div class="container breadcrumb">
+        当前位置： 网站首页 >
+        <if condition="empty($section['url'])">
+            <a href="/home/index/publish_list/section_id/{$section['id']}/is_home/1.html">{$section['name']}</a>
+            <else/>
+            <a href="{$section['url']}" target="_blank">{$section['name']}</a>
+        </if>
+        > <a href="/home/index/publish_list/type_id/{$publish_type['id']}.html">{$publish_type['name']}</a>
+        > <a href="#">正文</a>
+    </div>
+    <div class="container mt-15">
+        <div class="fl" style="width: 220px;border: 1px solid #eee;padding: 20px;">
+            <volist name="publish_type_list" id="item">
+                <a href="{:url('index/publish_list',['type_id'=>$item['id']])}"
+                   class="menu <if condition='$item.id eq $section_info.publish_type_id'>active</if>">{$item.name}</a>
+            </volist>
+        </div>
+        <div class="block-box fr" style="width: 950px;">
+            <div class="block-content pa-20">
+                <div class="article-title">
+                    {$section_info.title}
+                </div>
+                <div class="article-information">
+                    <span>公示级别:{$section_info.level_name}</span>
+                    <span>发布时间:{$section_info.publish_time}</span>
+                </div>
+                <div class="article-summary">
+                    {$section_info.summary}
+                </div>
+                <div class="article-content">
+                    {$section_info.content}
+                </div>
+            </div>
+        </div>
+        <div class="clear mt-15"></div>
+    </div>
+</block>
+<block name="script">
+</block>

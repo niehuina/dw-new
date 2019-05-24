@@ -1,0 +1,150 @@
+<extend name="public/user_base"/>
+
+<block name="title"></block>
+<block name="content_right">
+    <div class="block-content pa-20">
+        <div class="font-14 mb-10">
+            个人中心 > <a href="{:url('user/research')}">信息调研宣传公示</a> > <a href="#">公示发布</a>
+
+        </div>
+        <if condition="$model.review_status eq 2">
+            <div class="form-group mb-10">
+                <label for="">审核结论:</label>
+                <div style="color: red;">
+                    {$model.review_comment}
+                </div>
+            </div>
+            <div class="form-group mb-10">
+                <label for="">审核意见:</label>
+                <div style="color: red;">
+                    {$model.review_comment}
+                </div>
+            </div>
+        </if>
+        <form id="form" enctype="multipart/form-data">
+            <input type='hidden' id="id" name='id' value='{$model.id|default=""}'/>
+            <div class="form-group mt-15">
+                <label for="">公示标题</label>
+                <div><input type="text" class="form-control" id="title" name="title" value="{$model['title']}"></div>
+            </div>
+            <div class=" mt-15">
+                <div class="fl w-50x form-group">
+                    <label for="">公示类型</label>
+                    <div>
+                        <html:select id="publish_type_id" name="publish_type_id" data='publish_type_list'
+                                     class="form-control" selected="model['publish_type_id']"/>
+                    </div>
+                </div>
+                <div class="fr w-50x form-group pl-30">
+                    <label for="">公示级别</label>
+                    <div>
+                        <html:select id="level" name="level" data='publish_level'
+                                     data-value="code" data-key="value"
+                                     class="form-control" selected="model['level']"/>
+                    </div>
+                </div>
+                <div class="clear"></div>
+            </div>
+            <div class="form-group mt-15">
+                <label for="">公示概要说明</label>
+                <div><textarea class="form-control" id="summary" name="summary">{$model['summary']}</textarea></div>
+            </div>
+            <div class="form-group mt-15">
+                <label for="">公示内容</label>
+                <div>
+                    <textarea class="form-control kindeditor" id="content" name="content">{$model['content']}</textarea>
+                </div>
+            </div>
+        </form>
+        <div class="mt-15">
+            <button class="btn btn-primary" id="submit">保存</button>
+            <a href="{:url('user/research')}" class="btn btn-default">返回</a>
+        </div>
+    </div>
+</block>
+<block name="script">
+    <script type="text/javascript">
+        $(function () {
+            KindEditor.create('.kindeditor', {
+                allowFileManager: true,
+                width: '100%',
+                height: '380px',
+                extraFileUploadParams: {
+                    sessionid: '<?php echo session_id(); ?>'
+                },
+                afterBlur: function () {
+                    //编辑器失去焦点时直接同步，可以取到值
+                    this.sync();
+                }
+            });
+
+            function validate() {
+                return $('#form').validate({
+                    rules: {
+                        title: {
+                            required: true,
+                        },
+                        summary: {
+                            required: true,
+                        },
+                        content: {
+                            required: true,
+                        },
+                    },
+                    messages: {
+                        title: {
+                            required: '请输入公示标题',
+                        },
+                        summary: {
+                            required: '请输入公示概要说明',
+                        },
+                        content: {
+                            required: '请输入公示内容',
+                        },
+                    },
+                    errorPlacement: function (error, element) {
+                    },
+                    showErrors: function (errorMap, errorList) {
+                        if (errorList.length > 0) {
+                            toastr.remove();
+                            toastr.error(errorList[0]['message']);
+                        }
+                        this.defaultShowErrors();
+                    }
+                }).form();
+            }
+
+            $('#submit').click(function () {
+                var content = $("#content").val();
+                if (content.length==0) {
+                    toastr.error("请输入公示内容");
+                    return false;
+                }
+
+                if (validate()) {
+                    var data = new FormData($('#form')[0]);//$('#form').serialize();
+                    $.ajax({
+                        type: 'POST',
+                        url: 'research_detail',
+                        data: data,
+                        processData: false,
+                        contentType: false,
+                        success: function (data) {
+                            if (data.status == 0) {
+                                toastr.remove();
+                                toastr.error(data.message);
+                                return false;
+                            } else {
+                                toastr.success(data.message);
+                                window.location.href = "{:url('user/research')}";
+                            }
+                        },
+                        error: function () {
+                            toastr['error']('Error Occurred');
+                        }
+                    });
+                }
+            });
+        })
+    </script>
+</block>

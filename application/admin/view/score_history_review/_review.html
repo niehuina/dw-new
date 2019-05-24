@@ -1,0 +1,79 @@
+<div class='modal-header'>
+    审核
+</div>
+<div class='modal-body '>
+    <form class='' role='form' id='form'>
+        <input type='hidden' name='id' value='{$model.id|default=""}' />
+        <div class='row'>
+            <div class='col-sm-12'>
+                <div class='form-group'>
+                    <label>审核状态</label>
+                    <p>
+                        <html:radio name="review_status" data='review_status_list' class="checkbox-initem i-checks"
+                                    checked="model['review_status']"/>
+                    </p>
+                </div>
+            </div>
+            <div class='col-sm-12'>
+                <div class='form-group'>
+                    <label>审核意见</label>
+                    <p>
+                        <textarea id="review_comment" name="review_comment" class="form-control" style="height: 100px;">{$model.review_comment|default=''}</textarea>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<div class='modal-footer'>
+    <button type='button' class='btn btn-default' data-dismiss='modal'>取消</button>
+    <button type='button' class='btn btn-primary' data-style='zoom-in' id='submit'>提交</button>
+</div>
+
+<script type='text/javascript'>
+    $(document).ready(function () {
+        $('.i-checks').iCheck({
+            checkboxClass: 'icheckbox_square-green',
+            radioClass: 'iradio_square-green',
+        }).on('ifChanged', function (event) {
+            debugger;
+            $("#review_comment").val('');
+        });
+
+        function validate(){
+            return $('#form').validate({
+                rules: {
+                    review_status: {
+                        required: true,
+                    },
+                    review_comment: {
+                        required: true,
+                    },
+                },
+            }).form();
+        }
+        $('#submit').click(function () {
+            if (validate()) {
+                var load_btn = Ladda.create(this);
+                load_btn.start();
+                var data = $('#form').serialize();
+                $.ajax({
+                    type: 'POST',
+                    url: 'save',
+                    data: data,
+                    success: function (data) {
+                        if (check_status(data)){
+                            $('#modal-md').modal('hide');
+                            data_table.draw();
+                        }
+                    },
+                    error: function () {
+                        toastr['error']('Error Occurred');
+                    }
+                }).always(function () {
+                    load_btn.stop();
+                });
+            }
+        });
+    });
+</script>

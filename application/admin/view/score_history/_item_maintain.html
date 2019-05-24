@@ -1,0 +1,73 @@
+<div class='modal-header'>
+    {$edit_state? '修改' : '新增'}
+</div>
+<div class='modal-body '>
+    <form class='' role='form' id='form'>
+        <input type='hidden' name='id' value='{$model.id|default=""}' />
+        <input type='hidden' name='web_user_id' value='{$model.web_user_id|default=""}' />
+        <div class='row'>
+            <div class='col-sm-12'>
+                <div class='form-group'>
+                    <label>党员</label>
+                    <p>
+                       <label>{$model.web_user_name}</label>
+                    </p>
+                    <input type="hidden" id="web_user_id" name="web_user_id" value='{$model.web_user_id|default=""}'>
+                </div>
+            </div>
+            <div class='col-sm-12'>
+                <div class='form-group'>
+                    <label>积分项目</label>
+                    <p>
+                        <html:select id="score_item_id" name="score_item_id" data='score_item_list' class="form-control"
+                                     selected="model['score_item_id']" first="请选择"/>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<div class='modal-footer'>
+    <button type='button' class='btn btn-default' data-dismiss='modal'>取消</button>
+    <button type='button' class='btn btn-primary' data-style='zoom-in' id='submit'>提交</button>
+</div>
+
+<script type='text/javascript'>
+    $(document).ready(function () {
+        if("{$edit_state}"=="1" || "{$model['web_user_id']}" > 0){
+            $("#web_user_id").addClass("pace");
+        }
+        function validate(){
+            return $('#form').validate({
+                rules: {
+                    key: {
+                        required: true,
+                    }
+                },
+            }).form();
+        }
+        $('#submit').click(function () {
+            if (validate()) {
+                var load_btn = Ladda.create(this);
+                load_btn.start();
+                var data = $('#form').serialize();
+                $.ajax({
+                    type: 'POST',
+                    url: 'save',
+                    data: data,
+                    success: function (data) {
+                        if (check_status(data)){
+                            $('#modal-sm').modal('hide');
+                            data_table.draw();
+                        }
+                    },
+                    error: function () {
+                        toastr['error']('Error Occurred');
+                    }
+                }).always(function () {
+                    load_btn.stop();
+                });
+            }
+        });
+    });
+</script>

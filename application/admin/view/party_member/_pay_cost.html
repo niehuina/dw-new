@@ -1,0 +1,128 @@
+<div class='modal-header'>
+    缴纳党费
+</div>
+<div class='modal-body '>
+    <form class='' role='form' id='form'>
+        <input type='hidden' name='id' value='{$model.id|default=""}'/>
+        <div class='row'>
+            <div class='col-sm-12'>
+                <div class='form-group'>
+                    <label>党员姓名</label>
+                    <p>
+                        <label>{$model.web_user_name}</label>
+                    </p>
+                    <input type="hidden" id="web_user_id" name="web_user_id" value='{$model.web_user_id|default=""}'>
+                </div>
+            </div>
+            <div class='col-sm-12'>
+                <div class='form-group'>
+                    <label>缴纳年份</label>
+                    <p><input type='text' class='form-control' id='year' name='year' readonly="readonly"
+                              value='{$model.year|default=""}' autocomplete='off'/></p>
+                </div>
+            </div>
+            <div class='col-sm-12'>
+                <div class='form-group'>
+                    <label>缴纳月份</label>
+                    <p>
+                        <volist name="month_list" id="vo" key="k">
+                            <label class="checkbox-initem i-checks"> <input type="checkbox" id="{$vo}" name="months[]"
+                                                                            value="{$vo}"/> {$vo}月&nbsp;</label>
+                        </volist>
+                        <input type="hidden" name="month">
+                    </p>
+                </div>
+            </div>
+            <div class='col-sm-12'>
+                <div class='form-group'>
+                    <label>每月应缴金额</label>
+                    <p><input type='text' class='form-control' readonly="readonly" id='should_pay_money'
+                              value='{$model.should_pay_money|default=""}'
+                              autocomplete='off'/></p>
+                </div>
+            </div>
+            <div class='col-sm-12'>
+                <div class='form-group'>
+                    <label>缴纳金额</label>
+                    <p><input type='text' class='form-control' readonly="readonly" id='money' name='money'
+                              value='{$model.money|default="0"}'
+                              autocomplete='off'/></p>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<div class='modal-footer'>
+    <button type='button' class='btn btn-default' data-dismiss='modal'>取消</button>
+    <button type='button' class='btn btn-primary' data-style='zoom-in' id='submit'>提交</button>
+</div>
+
+<script type='text/javascript'>
+    $(document).ready(function () {
+        $('.i-checks').iCheck({
+            checkboxClass: 'icheckbox_square-green',
+            radioClass: 'iradio_square-green',
+        }).on('ifChecked ifUnchecked', function (event) {
+            $("#money").val($('input[name="months[]"]:checked').length * $("#should_pay_money").val());
+        });
+
+        $("#web_user_id").addClass("pace");
+        $("#year").addClass("pace");
+
+        $('.day').datepicker({
+            language: 'zh-CN',
+            format: "yyyy-mm-dd",
+            autoclose: true,
+            pickerPosition: 'top-left',
+            todayHighlight: true,
+            todayBtn: 'linked',
+
+        });
+
+        function validate() {
+            return $('#form').validate({
+                rules: {
+                    money: {
+                        required: true,
+                    }
+                },
+            }).form();
+        }
+
+        $('#submit').click(function () {
+            if (validate()) {
+                if ($('input[name="months[]"]:checked').length <= 0) {
+                    toastr['error']('请选择月份');
+                    return false;
+                }
+
+                if ($("#should_pay_money").val() == '') {
+                    toastr['error']('请先设置应交党费');
+                    return false;
+                }
+
+                var load_btn = Ladda.create(this);
+                load_btn.start();
+                var data = $('#form').serialize();
+
+                $.ajax({
+                    type: 'POST',
+                    url: 'save_pay_cost',
+                    data: data,
+                    success: function (data) {
+                        if (check_status(data)) {
+                            $('#modal-md').modal('hide');
+                            data_table.draw();
+                        }
+                    },
+                    error: function () {
+                        toastr['error']('Error Occurred');
+                    }
+                }).always(function () {
+                    load_btn.stop();
+                });
+
+            }
+        });
+    });
+</script>

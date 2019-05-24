@@ -1,0 +1,615 @@
+<style>
+    .form-horizontal .form-group {
+        min-height: 58px;
+    }
+</style>
+<div class='modal-header'>
+    {$edit_state? '任务修改' : '任务发布'}
+</div>
+<div class='modal-body '>
+    <div class="tabs-container">
+        <ul class="nav nav-tabs">
+            <li class="active"><a data-toggle="tab" href="#tab-1" aria-expanded="true">基本信息</a></li>
+            <li class=""><a data-toggle="tab" href="#tab-2" aria-expanded="false">任务项目</a></li>
+        </ul>
+        <div class="tab-content">
+            <div id="tab-1" class="tab-pane active">
+                <div class="panel-body">
+                    <div class='row'>
+                        <form class='' role='form' id='form' enctype="multipart/form-data">
+                            <input type='hidden' name='id' value='{$model.id|default=""}'/>
+                            <div class='col-sm-12'>
+                                <div class='form-group'>
+                                    <label>任务标题</label>
+                                    <p><input type='text' class='form-control' id='title' name='title'
+                                              value='{$model.title|default=""}'
+                                              autocomplete='off'/></p>
+                                </div>
+                            </div>
+                            <div class='col-sm-3'>
+                                <div class='form-group'>
+                                    <label>任务分类</label>
+                                    <p>
+                                        <html:select id="type_id" name="type_id" data='task_type_list'
+                                                     data-value="id" data-key="name"
+                                                     class="form-control" selected="model['type_id']" first="请选择"/>
+                                    </p>
+                                </div>
+                            </div>
+                            <div class='col-sm-3'>
+                                <div class='form-group'>
+                                    <label>任务结束时间</label>
+                                    <div class="input-group date day">
+                                        <input type="text" class="form-control" id="end_time" name="end_time"
+                                               value="{$model.end_time|default=''}" placeholder="选择日期"
+                                               autocomplete='off'>
+                                        <span class="input-group-addon green-date-button-able"><i
+                                                class="fa fa-calendar"></i></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class='col-sm-6 <if condition="$edit_state">hidden</if>'>
+                                <div class='form-group'>
+                                    <label>分配范围</label>
+                                    <p>
+                                        <html:select id="to_user_type" name="to_user_type" data="to_user_type_list"
+                                                     class="form-control" selected="model['to_user_type']" first="请选择"/>
+                                    </p>
+                                </div>
+                            </div>
+                            <div id="dep" style="display: none;" class='<if condition="$edit_state">hidden</if>'>
+                                <div style="display: inline-block; width: 100%; box-sizing: border-box; position:relative; z-index: 3333;">
+                                    <div id="dep_organ_tree" class="col-sm-6"
+                                         style="background-color:#FFF;border: 1px solid #e5e6e7;display: none;"></div>
+                                </div>
+                                <div class='col-sm-12'>
+                                    <div class="form-group">
+                                        <label>部门机构</label>
+                                        <p>
+                                            <input type="text" class="form-control" id="dep_node_name"
+                                                   name="dep_node_name"
+                                                   readonly="readonly"
+                                                   value="{$model.dep_organ_name|default=''}" autocomplete="off"/>
+                                        </p>
+                                        <input type="hidden" id="dep_node_id" name="to_dep_id"
+                                               value="{$model.to_dep_ids|default=''}"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="party" style="display: none;" class='<if condition="$edit_state">hidden</if>'>
+                                <div style="display: inline-block; width: 100%; box-sizing: border-box; position:relative; z-index: 3333;">
+                                    <div id="organ_tree" class="col-sm-6"
+                                         style="background-color:#FFF;border: 1px solid #e5e6e7;display: none;"></div>
+                                </div>
+                                <div class='col-sm-12'>
+                                    <div class="form-group">
+                                        <label>党组织机构</label>
+                                        <p>
+                                            <input type="text" class="form-control" id="node_name" name="node_name"
+                                                   readonly="readonly"
+                                                   value="{$model.organ_name|default=''}" autocomplete="off"/>
+                                        </p>
+                                        <input type="hidden" id="node_id" name="to_organ_id"
+                                               value="{$model.to_organ_ids|default=''}"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class='col-sm-12' id="user" style="display: none;" class='<if condition="$edit_state">hidden</if>'>
+                                <div class='form-group'>
+                                    <label>特定人员</label>
+                                    <p>
+                                        <html:select id="to_user_id" name="to_user_id[]" data='to_user_list'
+                                                     class="form-control"
+                                                     multiple="multiple"
+                                                     selected="model['to_user_id']"/>
+                                    </p>
+                                </div>
+                            </div>
+                            <div class='col-sm-12'>
+                                <div class='form-group'>
+                                    <label>任务概要说明</label>
+                                    <p>
+                                    <textarea name="summary" class="form-control"
+                                              style="height: 100px;">{$model.summary|default=''}</textarea>
+                                    </p>
+                                </div>
+                            </div>
+                            <div class='col-sm-12'>
+                                <div class='form-group'>
+                                    <label>任务内容</label>
+                                    <p><textarea name="content" id="content"
+                                                 class="kindeditor">{$model.content|default=''}</textarea>
+                                    </p>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div id="tab-2" class="tab-pane">
+                <div class="panel-body">
+                    <div class="row">
+                        <form class='form-horizontal <if condition="isset($model.status) && $model.status == 2">hidden</if>'
+                              role='form' id='edit-form'>
+                            <input type='hidden' name='id' value=''/>
+                            <input type='hidden' id="task_id" name='task_id' value='{$model.id|default=""}'/>
+                            <div class='form-group'>
+                                <label class="col-sm-2 control-label">项目标题</label>
+                                <div class="col-sm-8">
+                                    <input type="text" placeholder="项目标题" class="form-control" name="name">
+                                </div>
+                            </div>
+                            <div class='form-group'>
+                                <label class="col-sm-2 control-label">显示顺序</label>
+                                <div class="col-sm-8">
+                                    <input type='text' class='form-control' id='sort' name='sort'
+                                           value='{$model.sort|default=""}' autocomplete='off'/>
+                                </div>
+                                <div class='col-sm-2'>
+                                    <button class="btn btn-primary" data-style='zoom-in' id="add">保存</button>
+                                </div>
+                            </div>
+                        </form>
+                        <div class='table-responsive'>
+                            <table id='task_item_data_table' style='width:100%;'
+                                   class='table table-striped table-hover dataTables-example dataTable border-bottom'
+                                   role='grid'>
+                                <thead>
+                                <tr role='row'>
+                                    <th>项目标题</th>
+                                    <th>显示顺序</th>
+                                    <th width="80px"></th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class='modal-footer'>
+    <button type='button' class='btn btn-default' data-dismiss='modal'>取消</button>
+    <button type='button' class='btn btn-primary' data-style='zoom-in' id='submit'>提交</button>
+    <button type='button' class='btn btn-primary' data-style='zoom-in' id='submit_and_add_item'>提交并添加任务项目</button>
+</div>
+
+<script type='text/javascript'>
+    var _pageSize = 10;
+    var task_item_data_table;
+    $(document).ready(function () {
+        show_div("{$model['to_user_type']}");
+
+        $('.day').datepicker({
+            language: 'zh-CN',
+            format: "yyyy-mm-dd",
+            autoclose: true,
+            pickerPosition: 'top-left',
+            todayHighlight: true,
+            todayBtn: 'linked',
+        });
+
+        KindEditor.create('.kindeditor', {
+            allowFileManager: true,
+            width: '100%',
+            height: '380px',
+            extraFileUploadParams: {
+                sessionid: '<?php echo session_id(); ?>'
+            },
+            afterBlur: function () {
+                //编辑器失去焦点时直接同步，可以取到值
+                this.sync();
+            }
+        });
+
+        function validate() {
+            return $('#form').validate({
+                rules: {
+                    type_id: {
+                        required: true,
+                    },
+                    end_time: {
+                        required: true,
+                    },
+                    title: {
+                        required: true,
+                    },
+                    summary: {
+                        required: true,
+                    },
+                    content: {
+                        required: true,
+                    }, dep_node_name: {
+                        required: function () {
+                            return $("#to_user_type").val() == "dep";
+                        },
+                    },
+                    node_name: {
+                        required: function () {
+                            return $("#to_user_type").val() == "party";
+                        },
+                    },
+                    'to_user_id[]': {
+                        required: function () {
+                            return $("#to_user_type").val() == "user";
+                        },
+                    },
+                },
+            }).form();
+        }
+
+        $("#to_user_type").change(function () {
+            show_div($("#to_user_type").val());
+        });
+
+        $("#to_user_id").select2({
+            language: "zh-CN",
+            placeholder: "请选择",
+        });
+
+        var dep_treeId = "dep_organ_tree";
+        var treeId = "organ_tree";
+        $(document).click(function (e) {
+            var dep_el = $(e.target).parents("#" + dep_treeId);
+            if (dep_el.length == 0 || dep_el.length > 0 && dep_el[0].id != dep_treeId) {
+                $("#" + dep_treeId).hide();
+            }
+            var el = $(e.target).parents("#" + treeId);
+            if (el.length == 0 || el.length > 0 && el[0].id != treeId) {
+                $("#" + treeId).hide();
+            }
+        });
+
+        $("#dep_node_name").click(function (event) {
+            event.stopPropagation();
+            var A_width = $(this).parent().width();
+            var A_top = $(this).position().top + $(this).outerHeight(true);  //  1
+            var A_left = $(this).position().left;
+            $("#" + dep_treeId).show().css({
+                "position": "absolute",
+                "width": A_width,
+                "top": A_top + "px",
+                "left": A_left + "px"
+            });
+
+            checkSelectNode(dep_treeId, 'dep_node_id');
+        });
+        $("#" + dep_treeId).jstree({
+            "core": {
+                'data': {
+                    'url': '/admin/department/getOrganTree',
+                    'dataType': 'json',
+                    'data': function (node) {
+                        return {'id': node.id};
+                    },
+                    success: function () {
+                        //checkSelectNode();
+                    }
+                },
+                "check_callback": true,
+                'multiple': true,
+            },
+            'checkbox': {
+                keep_selected_style: false,
+                three_state: true,
+                cascade: ''
+            },
+            "plugins": ["wholerow", 'checkbox']
+        }).on('loaded.jstree', function () {
+            $("#" + dep_treeId).find("li").each(function () {
+                if ($("#dep_node_id").val() != "") {
+                    var checkIds = $("#dep_node_id").val().split(',');
+                    for (var i = 0; i < checkIds.length; i++) {
+                        if ($(this).attr("id") == checkIds[i]) {
+                            $("#" + dep_treeId).jstree("check_node", $(this));
+                        }
+                    }
+                }
+            });
+        }).bind('activate_node.jstree', function (obj, e) {
+            check_nodes(dep_treeId, true);
+            return;
+            var eventNode = e.node;
+            if (eventNode.parent != "#") {
+                uncheckPreNode(dep_treeId, 'dep_node_id');
+                //$("#" + dep_treeId).hide();
+                $("#dep_node_id").val(eventNode.id);
+                $("#dep_node_name").val(eventNode.text);
+            } else {
+                var ref = $("#" + dep_treeId).jstree(true);
+                ref.deselect_node(eventNode);
+            }
+        });
+        $("#node_name").click(function (event) {
+            event.stopPropagation();
+            var A_width = $(this).parent().width();
+            var A_top = $(this).position().top + $(this).outerHeight(true);  //  1
+            var A_left = $(this).position().left;
+            $("#" + treeId).show().css({
+                "position": "absolute",
+                "width": A_width,
+                "top": A_top + "px",
+                "left": A_left + "px"
+            });
+
+            checkSelectNode(treeId, 'node_id');
+        });
+        $("#" + treeId).jstree({
+            "core": {
+                'data': {
+                    'url': '/admin/organization/getOrganTree',
+                    'dataType': 'json',
+                    'data': function (node) {
+                        return {'id': node.id};
+                    },
+                    success: function () {
+                        //checkSelectNode();
+                    }
+                },
+                "check_callback": true,
+                'multiple': true,
+            },
+            'checkbox': {
+                keep_selected_style: false,
+                three_state: true,
+                cascade: ''
+            },
+            "plugins": ["wholerow", 'checkbox']
+        }).on('loaded.jstree', function () {
+            $("#" + treeId).find("li").each(function () {
+                if ($("#node_id").val() != "") {
+                    var checkIds = $("#node_id").val().split(',');
+                    for (var i = 0; i < checkIds.length; i++) {
+                        if ($(this).attr("id") == checkIds[i]) {
+                            $("#" + treeId).jstree("check_node", $(this));
+                        }
+                    }
+                }
+            });
+        }).bind('activate_node.jstree', function (obj, e) {
+            check_nodes(treeId, false);
+            return;
+            var eventNode = e.node;
+            if (eventNode.parent != "#") {
+                uncheckPreNode(treeId, 'node_id');
+                $("#" + treeId).hide();
+                $("#node_id").val(eventNode.id);
+                $("#node_name").val(eventNode.text);
+            } else {
+                var ref = $("#" + treeId).jstree(true);
+                ref.deselect_node(eventNode);
+            }
+        });
+
+        function checkSelectNode(tree_Id, nodeId) {
+            var node_id = $('#' + nodeId).val();
+            var node = $("#" + tree_Id).jstree("get_node", "#" + node_id);
+            var ref = $("#" + tree_Id).jstree(true);
+            ref.select_node(node);
+        }
+
+        function uncheckPreNode(tree_Id, nodeId) {
+            var node_id = $('#' + nodeId).val();
+            var node = $("#" + tree_Id).jstree("get_node", "#" + node_id);
+            var ref = $("#" + tree_Id).jstree(true);
+            ref.deselect_node(node);
+        }
+
+        function saveTask(btn, tf_add_item) {
+            if (validate()) {
+                var load_btn = Ladda.create(btn);
+                load_btn.start();
+                var data = new FormData($('#form')[0]);//$('#form').serialize();
+                $.ajax({
+                    type: 'POST',
+                    url: 'save',
+                    data: data,
+                    processData: false,
+                    contentType: false,
+                    success: function (data) {
+                        if (check_status(data)) {
+                            $("#form input[name='id']").val(data.id);
+                            $("#edit-form #task_id").val(data.id);
+                            if (tf_add_item) {
+                                $(".nav-tabs li").eq(1).find("a").click();
+                            } else {
+                                $('#modal-lg').modal('hide');
+                            }
+                            data_table.draw();
+                        }
+                    },
+                    error: function () {
+                        toastr['error']('Error Occurred');
+                    }
+                }).always(function () {
+                    load_btn.stop();
+                });
+            }
+        }
+
+        $('#submit').click(function () {
+            saveTask(this, false);
+        });
+
+        $('#submit_and_add_item').click(function () {
+            saveTask(this, true);
+        });
+
+        $(".nav-tabs li").eq(1).click(function () {
+            var id = $("#task_id").val();
+            if (!id) {
+                toastr['error']("请先提交任务基本信息");
+                return false;
+            } else {
+                $("#submit").hide();
+                $('#submit_and_add_item').hide();
+            }
+        });
+
+        $(".nav-tabs li").eq(0).click(function () {
+            $("#submit").show();
+            $('#submit_and_add_item').show();
+        });
+
+        var columns = [
+            {'data': 'name'},
+            {'data': 'sort'},
+            {
+                'data': null,
+                'render': function (data) {
+                    return '<a title="删除" href="javascript:void(0);" onclick="delete_item_edit(' + data.id + ');"><i class="fa fa-trash"></i></a>';
+                }
+            }
+        ];
+
+        var query = function (params) {
+            params.task_id = $("#task_id").val();
+        };
+
+        task_item_data_table = $('#task_item_data_table').DataTable({
+            pageLength: _pageSize,
+            serverSide: true,
+            ajax: {
+                url: 'get_task_item_list',
+                type: 'POST',
+                data: query
+            },
+            "drawCallback": null,
+            "columns": columns,
+            "ordering": false,
+            "searching": false,
+            "dom": "rt<'row'<'col-sm-12'<'col-sm-6'i><'col-sm-6'p>>><'clear'>",
+        });
+
+        $('#task_item_data_table tbody').on('dblclick', 'tr td:not(:last-child)', function () {
+            var data = task_item_data_table.row(this).data();
+            $("#edit-form input[name='id']").val(data.id);
+            $("#edit-form input[name='name']").val(data.name);
+            $("#edit-form input[name='sort']").val(data.sort);
+        });
+
+        function edit_validate() {
+            return $('#edit-form').validate({
+                rules: {
+                    name: {
+                        required: true,
+                    },
+                    sort: {
+                        required: true,
+                        number: true,
+                    },
+                },
+            }).form();
+        }
+
+        $('#add').click(function () {
+            if (edit_validate()) {
+                var load_btn = Ladda.create(this);
+                load_btn.start();
+                var data = $('#edit-form').serialize();
+                $.ajax({
+                    type: 'POST',
+                    url: 'add_item',
+                    data: data,
+                    success: function (data) {
+                        if (check_status(data)) {
+                            //清空数据
+                            clear_form();
+                            task_item_data_table.draw();
+                        }
+                    },
+                    error: function () {
+                        toastr['error']('Error Occurred');
+                    }
+                }).always(function () {
+                    load_btn.stop();
+                });
+            }
+        });
+    });
+
+    function check_nodes(tree_id, is_dep) {
+        var ids = '', names = '';
+
+        //checked nodes
+        var selectedNodes = jQuery("#" + tree_id).jstree("get_selected", true);
+        $.each(selectedNodes, function () {
+            if (this.id != '0') {
+                ids += this.id + ',';
+                names += this.text + ', ';
+            }
+        });
+
+        //undetermined nodes
+        // jQuery("#" + treeid).find(".jstree-undetermined").each(function (i, element) {
+        //     ids += $(element).closest('.jstree-node').attr("id") + ',';
+        // });
+        if (is_dep) {
+            $("#dep_node_name").val(names);
+            $("#dep_node_id").val(ids);
+        } else {
+            $("#node_name").val(names);
+            $("#node_id").val(ids);
+        }
+    }
+
+
+    function show_div(to_type) {
+        if (to_type == "all") {
+            $("#dep").hide();
+            $("#party").hide();
+            $("#user").hide();
+        } else if (to_type == "dep") {
+            $("#dep").show();
+            $("#party").hide();
+            $("#user").hide();
+        } else if (to_type == "party") {
+            $("#dep").hide();
+            $("#party").show();
+            $("#user").hide();
+        } else if (to_type == "user") {
+            $("#dep").hide();
+            $("#party").hide();
+            $("#user").show();
+        } else {
+            $("#dep").hide();
+            $("#party").hide();
+            $("#user").hide();
+        }
+    }
+
+    function clear_form() {
+        $("#edit-form input[name='id']").val("");
+        $('#edit-form').find("input[type='text']").val("");
+    }
+
+    function delete_item_edit(id) {
+        swal({
+            title: "",
+            text: "确定要删除?",
+            showCancelButton: true,
+            confirmButtonColor: "#18a689",
+            confirmButtonText: "确定",
+            cancelButtonColor: "#e6e6e6",
+            cancelButtonText: "取消"
+        }, function () {
+            $.ajax({
+                type: 'POST',
+                url: "delete_item",
+                dataType: 'json',
+                async: false,
+                data: {
+                    id: id,
+                },
+                success: function (data) {
+                    if (check_status(data)) {
+                        task_item_data_table.draw();
+                    }
+                }
+            });
+        });
+    }
+</script>

@@ -1,0 +1,57 @@
+<extend name="public/user_base"/>
+
+<block name="title"></block>
+<block name="content_right">
+    <div class="block-content pa-20">
+        <div class="font-14 mb-10">
+            个人中心 > <a href="#">任务完成情况</a>
+
+        </div>
+        <table class="table-main w-100x mt-30">
+            <thead>
+            <tr>
+                <th>任务名称（点击查看详情）</th>
+                <th width="">任务到期时间</th>
+                <th width="">任务状态</th>
+                <th width="">项目名称</th>
+                <th width="">项目到期时间</th>
+                <th width="">项目状态</th>
+                <th width=""></th>
+            </tr>
+            </thead>
+            <tbody>
+            <volist name="records" id="item">
+                <tr>
+                    <td style="text-align:left; width: 380px;">
+
+                        <a target="_blank" href="{:url('index/task_detail',['id'=>$item['task_id']])}">
+                            {$item.task_title}</a>
+
+                    </td>
+                    <td>{$item.task_end_time}</td>
+                    <td style="color: {$item.task_status_color};">{$item.task_status}</td>
+                    <td style="text-align:left;">{$item.name}</td>
+                    <td>{$item.task_end_time}</td>
+                    <td style="color: {$item.item_status_color};">{$item.item_status}</td>
+                    <td style="text-align:left;">
+                        <if condition="$item.review_status neq 3">
+                            <a href="{:url('user/task_detail',['id'=>$item['id']])}">
+                                <if condition="$item.task_item_status eq 2 and $item.review_status neq 3">
+                                    重新提交
+                                    <else/>
+                                    提交
+                                </if>
+                            </a>
+                            <else/>
+                            <a href="{:url('user/task_item_info',['id'=>$item['id']])}">查看</a>
+                        </if>
+                    </td>
+                </tr>
+            </volist>
+            </tbody>
+        </table>
+        <html:pager total="$total_page" index="$page"/>
+    </div>
+</block>
+<block name="script">
+</block>

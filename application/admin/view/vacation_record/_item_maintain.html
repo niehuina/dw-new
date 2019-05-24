@@ -1,0 +1,222 @@
+<div class='modal-header'>
+    {$edit_state? '修改年假' : '新增年假'}
+</div>
+<div class='modal-body '>
+    <form class='' role='form' id='form'>
+        <input type='hidden' id="id" name='id' value='{$model.id|default=""}'/>
+        <div class='row'>
+            <div class='col-sm-12'>
+                <div class='form-group'>
+                    <label>人员姓名</label>
+                    <p>
+                        <if condition="$edit_state eq false">
+                            <html:select id="web_user_id" name="web_user_id" data='web_user_list' class="form-control"
+                                         selected="model['web_user_id']" first="请选择"/>
+                            <else/>
+                            <input class='form-control' type="text" id="web_user_name" readonly="readonly"
+                                   value="{$model.web_user_name|default=''}">
+                            <input type="hidden" id="web_user_id" name="web_user_id" readonly="readonly"
+                                   value="{$model.web_user_id|default=''}">
+                        </if>
+                    </p>
+                </div>
+            </div>
+            <div class='col-sm-12'>
+                <div class='form-group'>
+                    <label>休假开始日期</label>
+                    <div class="input-group date start-date">
+                        <input type="text" class="form-control" id="start_time" name="start_time"
+                               value="{$model.start_time|default=''}"
+                               placeholder="选择日期">
+                        <span class="input-group-addon green-date-button-able"><i class="fa fa-calendar"></i></span>
+                    </div>
+                </div>
+            </div>
+            <div class='col-sm-12'>
+                <div class='form-group'>
+                    <label>休假结束日期</label>
+                    <div class="input-group date end-date">
+                        <input type="text" class="form-control" id="end_time" name="end_time"
+                               value="{$model.end_time|default=''}"
+                               placeholder="选择日期">
+                        <span class="input-group-addon green-date-button-able"><i class="fa fa-calendar"></i></span>
+                    </div>
+                </div>
+            </div>
+            <div class='col-sm-12'>
+                <div class='form-group'>
+                    <label>休假天数<span style="color: red;">（未去除法定节假日，请手动调整）</span></label>
+                    <p><input type='text' class='form-control' id='days' name='days'
+                              value='{$model.days|default=""}' autocomplete='off'/></p>
+                </div>
+            </div>
+            <div class='col-sm-12 hidden'>
+                <div class='form-group'>
+                    <label>休假类型</label>
+                    <p>
+                        <label class="checkbox-initem i-checks"><input type="radio" name="type" value="1"
+                                                                       checked="checked">年休假</label>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<div class='modal-footer'>
+    <button type='button' class='btn btn-default' data-dismiss='modal'>取消</button>
+    <button type='button' class='btn btn-primary' data-style='zoom-in' id='submit'>提交</button>
+</div>
+
+<script type='text/javascript'>
+    if ("{$edit_state}" == "1") {
+        $("#web_user_id").addClass("pace");
+    }
+    var holiday_list = jQuery.parseJSON('{$holiday_list}');
+    $(document).ready(function () {
+        if ($("#id").val() == '') {
+            $("#web_user_id").select2();
+        }
+        $('.start-date').datepicker({
+            language: 'zh-CN',
+            format: "yyyy-mm-dd",
+            autoclose: true,
+            pickerPosition: 'top-left',
+            todayHighlight: true,
+            todayBtn: 'linked',
+        }).on('changeDate', function (e) {
+            var startTime = e.date;
+            if (typeof (startTime) != "undefined") {
+                var start_year = startTime.getFullYear();
+                debugger;
+                $('.end-date').datepicker('setStartDate', startTime);
+                $('.end-date').datepicker('setEndDate', new Date(start_year + "-12-31"));
+
+                var start = $('#start_time').val();
+                var end = $('#end_time').val();
+                var all_days = getAllDay(start, end);
+                var days = 0;
+                $.each(all_days, function (i, val) {
+                    //if (jQuery.inArray(val, holiday_list) < 0) {
+                    days++;
+                    //}
+                });
+
+                $("#days").val(days);
+            } else {
+                $('.end-date').datepicker('setStartDate', null);
+                $('.end-date').datepicker('setEndDate', null);
+                $("#days").val(0);
+            }
+        });
+
+        $('.end-date').datepicker({
+            language: 'zh-CN',
+            format: "yyyy-mm-dd",
+            autoclose: true,
+            pickerPosition: 'top-left',
+            todayHighlight: true,
+            todayBtn: 'linked',
+        }).on('changeDate', function (e) {
+            var endTime = e.date;
+            if (typeof (endTime) != "undefined") {
+                var start_year = endTime.getFullYear();
+                $('.start-date').datepicker('setStartDate', new Date(start_year + "-01-01"));
+                $('.start-date').datepicker('setEndDate', endTime);
+
+                var start = $('#start_time').val();
+                var end = $('#end_time').val();
+                var all_days = getAllDay(start, end);
+                var days = 0;
+                $.each(all_days, function (i, val) {
+                    //if (jQuery.inArray(val, holiday_list) < 0) {
+                    days++;
+                    //}
+                });
+
+                $("#days").val(days);
+            } else {
+                $('.start-date').datepicker('setStartDate', null);
+                $('.start-date').datepicker('setEndDate', null);
+                $("#days").val(0);
+            }
+        });
+
+        function validate() {
+            return $('#form').validate({
+                rules: {
+                    web_user_id: {
+                        required: true,
+                    },
+                    start_time: {
+                        required: true,
+                    },
+                    end_time: {
+                        required: true,
+                    },
+                    days: {
+                        required: true,
+                        number: true,
+                    },
+                    type: {
+                        required: true,
+                    }
+                },
+            }).form();
+        }
+
+        $('#submit').click(function () {
+            if (validate()) {
+                var load_btn = Ladda.create(this);
+                load_btn.start();
+                var data = $('#form').serialize();
+                $.ajax({
+                    type: 'POST',
+                    url: 'save',
+                    data: data,
+                    success: function (data) {
+                        if (check_status(data)) {
+                            $('#modal-sm').modal('hide');
+                            data_table.draw();
+                        }
+                    },
+                    error: function () {
+                        toastr['error']('Error Occurred');
+                    }
+                }).always(function () {
+                    load_btn.stop();
+                });
+            }
+        });
+
+        $('.checkbox-initem').select(function () {
+            alert("dd");
+        });
+    });
+
+    Date.prototype.format = function () {
+        var s = '';
+        s += this.getFullYear() + '-';          // 获取年份。
+        s += ('0' + (this.getMonth() + 1)).slice(-2) + "-";         // 获取月份。
+        s += ('0' + this.getDate()).slice(-2);                 // 获取日。
+        return (s);                          // 返回日期。
+    };
+
+    function getAllDay(begin, end) {
+        var ab = begin.split("-");
+        var ae = end.split("-");
+        var db = new Date();
+        db.setUTCFullYear(ab[0], ab[1] - 1, ab[2]);
+        var de = new Date();
+        de.setUTCFullYear(ae[0], ae[1] - 1, ae[2]);
+        var unixDb = db.getTime();
+        var unixDe = de.getTime();
+        var allDays = new Array();
+        for (var k = unixDb; k <= unixDe;) {
+            allDays.push((new Date(parseInt(k))).format());
+            k = k + 24 * 60 * 60 * 1000;
+        }
+
+        return allDays;
+    }
+
+</script>

@@ -1,0 +1,90 @@
+<style>
+    .tree-item-icon-color {
+        color: #dfba49;
+    }
+</style>
+<div class='modal-header'>
+    设置栏目角色
+</div>
+<div class='modal-body '>
+    <form class='' role='form' id='form'>
+        <input type='hidden' name='section_id' value='{$model.id|default=""}'/>
+        <div class='row'>
+            <div class='col-sm-6'>
+                <div class='form-group'>
+                    <label>栏目名称</label>
+                    <p><input type='text' class='form-control' id='name' readonly="readonly"
+                              value='{$model.name|default=""}'
+                              autocomplete='off'/></p>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-6">
+                <label>角色</label>
+                <p>
+                    <foreach name="role_list" item="vo" key="k">
+                        <if condition="in_array($k,explode(',',$selected_roles)) eq true">
+                            <input type="checkbox" id="{$k}" name="roles[]" value="{$k}" class="i-checks form-control"
+                                   checked="true"/>{$vo}&nbsp;
+                            <else>
+                                <input type="checkbox" id="{$k}" name="roles[]" value="{$k}"
+                                       class="i-checks form-control"/>{$vo}&nbsp;
+                            </else>
+                        </if>
+                    </foreach>
+                </p>
+            </div>
+        </div>
+    </form>
+</div>
+<div class='modal-footer'>
+    <button type='button' class='btn btn-default' data-dismiss='modal'>取消</button>
+    <button type='button' class='btn btn-primary' data-style='zoom-in' id='submit'>提交</button>
+</div>
+
+<script type='text/javascript'>
+    $(document).ready(function () {
+
+        $('.i-checks').iCheck({
+            checkboxClass: 'icheckbox_square-green',
+            radioClass: 'iradio_square-green',
+        });
+
+        function validate() {
+            return $('#form').validate({
+                rules: {
+                    parent_id: {
+                        required: true,
+                    }
+
+                },
+            }).form();
+        }
+
+        $('#submit').click(function () {
+            if (validate()) {
+                var load_btn = Ladda.create(this);
+                load_btn.start();
+                var data = $('#form').serialize();
+                $.ajax({
+                    type: 'POST',
+                    url: 'save_roles',
+                    data: data,
+                    success: function (data) {
+                        if (check_status(data)) {
+                            $('#modal-md').modal('hide');
+                            data_table.draw();
+                        }
+                    },
+                    error: function () {
+                        toastr['error']('Error Occurred');
+                    }
+                }).always(function () {
+                    load_btn.stop();
+                });
+            }
+        });
+    });
+
+</script>

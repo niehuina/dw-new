@@ -1,0 +1,161 @@
+<extend name='public/base'/>
+
+<block name='title'>部门组织机构管理</block>
+<block name='content'>
+    <div class='row wrapper border-bottom white-bg page-heading'>
+        <div class='col-lg-6'>
+            <h2>部门组织机构管理</h2>
+            <ol class='breadcrumb'>
+                <li>
+                    <a>基础管理</a>
+                </li>
+                <li class='active'>
+                    <strong>部门组织机构管理</strong>
+                </li>
+            </ol>
+        </div>
+        <div class='col-lg-6'>
+            <div class='text-right'>
+                <a data-toggle='modal' data-target='#modal-sm' href='_item_maintain' id="btn-add"
+                   class='btn btn-primary m-t-lg'>新增组织机构</a>
+                <a data-toggle='modal' data-target='#modal-sm' href='_item_maintain' id="btn-edit" style="display: none;"
+                   class='btn btn-primary m-t-lg'>修改组织机构</a>
+            </div>
+        </div>
+    </div>
+    <div class='wrapper wrapper-content '>
+        <div class='row'>
+            <div class='col-lg-12'>
+                <div style="display: inline-block; width: 100%;">
+                    <div id="organ_tree"></div>
+                </div>
+                <input type="hidden" id="organ_id" name="organ_id" />
+            </div>
+        </div>
+    </div>
+</block>
+<block name="style">
+    <style>
+        .tree-item-icon-color {
+            color: #dfba49;
+        }
+    </style>
+</block>
+<block name='script'>
+    <script type='text/javascript'>
+        var _organTree;
+        $(document).ready(function () {
+            _organTree = new OrganTree();
+            _organTree.init($("#organ_tree"), '');
+
+            $("#btn-add").click(function () {
+                var organ_id = $("#organ_id").val();
+                if(organ_id == ""){
+                    toastr["error"]("请选择组织机构");
+                    return false;
+                }
+                $("#btn-add").attr("href", "_item_maintain?parent_id="+organ_id);
+            });
+        });
+
+        var OrganTree = (function ($) {
+            return function () {
+                var $tree;
+
+                function init($treeContainer, checkId) {
+                    $tree = $treeContainer;
+                    $tree.jstree({
+                        "types": {
+                            "organ": {
+                                "icon": "fa fa-folder tree-item-icon-color"
+                            },
+                            "com": {
+                                "icon": "fa fa-file tree-item-icon-color"
+                            }
+                        },
+                        "core": {
+                            "data": {
+                                "url": "getOrganTree",
+                                "dataType": "json",
+                                "cache": true,
+                                "dblclick_toggle": false
+                            },
+                            "attr": {
+                                "class": "jstree-checked"
+                            }
+                        },
+                        "contextmenu":{
+                            "items":function(node){
+                                var items = {
+                                    "edit": {
+                                        "label":"修改组织机构",
+                                        "action":function (obj) {
+                                            var inst = jQuery.jstree.reference(obj.reference);
+                                            var clickedNode = inst.get_node(obj.reference);
+
+                                            $("#btn-edit").attr("href", "_item_maintain?id="+clickedNode.id);
+                                            $("#btn-edit").click();
+                                        }
+                                    },
+                                    "remove": {
+                                        "label":"删除组织机构",
+                                        "action":function (obj) {
+                                            var inst = jQuery.jstree.reference(obj.reference);
+                                            var clickedNode = inst.get_node(obj.reference);
+
+                                            delete_item(clickedNode.id);
+                                        }
+                                    },
+                                }
+
+                                if (node.id > 0) {
+                                    return items;
+                                }else{
+                                    return '';
+                                }
+                            }
+                        },
+                        "plugins": ['contextmenu', 'status'],
+                    }).on('loaded.jstree', function () {
+                        //$tree.jstree('open_all');
+                    }).bind("activate_node.jstree", function (obj, e) {
+                        // 获取当前节点
+                        var node_id = e.node.id;
+                        $("#organ_id").val(node_id);
+                    });
+                };
+
+                return {
+                    init: init
+                }
+            }
+        })(jQuery);
+
+        function delete_item(id) {
+            swal({
+                title: "",
+                text: "确定要删除?",
+                showCancelButton: true,
+                confirmButtonColor: "#18a689",
+                confirmButtonText: "确定",
+                cancelButtonColor: "#e6e6e6",
+                cancelButtonText: "取消"
+            }, function () {
+                $.ajax({
+                    type: 'POST',
+                    url: "delete",
+                    dataType: 'json',
+                    async: false,
+                    data: {
+                        id: id,
+                    },
+                    success: function (data) {
+                        if (check_status(data)) {
+                            $("#organ_tree").jstree(true).refresh();
+                        }
+                    }
+                });
+            });
+        }
+    </script>
+</block>

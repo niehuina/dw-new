@@ -1,0 +1,74 @@
+<div class='modal-header'>
+    应缴党费
+</div>
+<div class='modal-body '>
+    <form class='' role='form' id='form'>
+        <input type='hidden' name='id' value='{$model.id|default=""}' />
+        <div class='row'>
+            <div class='col-sm-12'>
+                <div class='form-group'>
+                    <label>党员姓名</label>
+                    <p>
+                        <label>{$model.web_user_name}</label>
+                    </p>
+                    <input type="hidden" id="web_user_id" name="web_user_id" value='{$model.web_user_id|default=""}'>
+                </div>
+            </div>
+            <div class='col-sm-12'>
+                <div class='form-group'>
+                    <label>年份</label>
+                    <p><input type='text' class='form-control' id='year' name='year' readonly="readonly" value='{$model.year|default=""}' autocomplete='off'/></p>
+                </div>
+            </div>
+            <div class='col-sm-12'>
+                <div class='form-group'>
+                    <label>月应缴党费金额(元)</label>
+                    <p><input type='text' class='form-control' id='money' name='money' value='{$model.money|default=""}' autocomplete='off'/></p>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<div class='modal-footer'>
+    <button type='button' class='btn btn-default' data-dismiss='modal'>取消</button>
+    <button type='button' class='btn btn-primary' data-style='zoom-in' id='submit'>提交</button>
+</div>
+
+<script type='text/javascript'>
+    $(document).ready(function () {
+        $("#web_user_id").addClass("pace");
+        function validate(){
+            return $('#form').validate({
+                rules: {
+                    money: {
+                        required: true,
+                        number: true,
+                    }
+                },
+            }).form();
+        }
+        $('#submit').click(function () {
+            if (validate()) {
+                var load_btn = Ladda.create(this);
+                load_btn.start();
+                var data = $('#form').serialize();
+                $.ajax({
+                    type: 'POST',
+                    url: 'save_should_pay_cost',
+                    data: data,
+                    success: function (data) {
+                        if (check_status(data)){
+                            $('#modal-sm').modal('hide');
+                            data_table.draw();
+                        }
+                    },
+                    error: function () {
+                        toastr['error']('Error Occurred');
+                    }
+                }).always(function () {
+                    load_btn.stop();
+                });
+            }
+        });
+    });
+</script>

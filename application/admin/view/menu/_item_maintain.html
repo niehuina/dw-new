@@ -1,0 +1,166 @@
+<div class='modal-header'>
+    {$edit_state? '修改' : '新增'}
+</div>
+<div class='modal-body '>
+    <form class='' role='form' id='form' enctype="multipart/form-data">
+        <input type='hidden' name='id' value='{$model.id|default=""}' />
+        <div class='row'>
+            <div class='col-sm-6'>
+                <div class='form-group'>
+                    <label>菜单名称</label>
+                    <p><input type='text' class='form-control' id='name' name='name'
+                              value='{$model.name|default=""}' autocomplete='off'/></p>
+                </div>
+            </div>
+            <div class='col-sm-6'>
+                <div class='form-group'>
+                    <label>上级菜单</label>
+                    <p>
+                        <html:select name="parent_id" data='menu_list' class="form-control"
+                                     selected="model['parent_id']" data-value="id" data-key="name"
+                                     first="请选择"/>
+                    </p>
+                </div>
+            </div>
+            <!--<div class='col-sm-6'>-->
+                <!--<div class='form-group'>-->
+                    <!--<label>菜单级别</label>-->
+                    <!--<p><input type='text' class='form-control' id='level' name='level'
+                        value='{$model.level|default=""}' autocomplete='off'/></p>-->
+                <!--</div>-->
+            <!--</div>-->
+            <div class='col-sm-6'>
+                <div class='form-group'>
+                    <label>内容类型</label>
+                    <p>
+                        <html:select id="content_type" name="content_type" data='type_list' class="form-control"
+                                     selected="model['content_type']" />
+                    </p>
+                </div>
+            </div>
+            <div class='col-sm-3'>
+                <div class='form-group'>
+                    <label>系统内置</label>
+                    <p><html:radio name="preset" data='yn_list' class="checkbox-initem i-checks"
+                                checked="model['preset']"/>
+                    </p>
+                </div>
+            </div>
+            <div class='col-sm-3'>
+                <div class='form-group'>
+                    <label>显示顺序</label>
+                    <p><input type='text' class='form-control' id='display_order' name='display_order' value='{$model.display_order|default=""}' autocomplete='off'/></p>
+                </div>
+            </div>
+            <div class='col-sm-12'>
+                <div class='form-group'>
+                    <label>Banner图片
+                        <a onclick="$('#picture').click()">上传 <i class="fa fa-upload"></i>
+                        </a>
+                    </label>
+                    <p>
+                        <img id="preview" src="{$model.banner_url|default=''}" width="100%">
+                    </p>
+                    <input id="picture" name="picture" type="file" accept="image/*" style="display: none;"
+                           onchange="document.getElementById('preview').src = window.URL.createObjectURL(document.getElementById('picture').files[0])">
+                    <input type='hidden' class='form-control' name='banner_url'
+                           value='{$model.banner_url|default=""}' autocomplete='off'/>
+                </div>
+            </div>
+            <div class='col-sm-12' id="contKDiv" style="display: none;">
+                <div class='form-group'>
+                    <label>内容</label>
+                    <p>
+                        <textarea name="content_value" class="kindeditor">{$model.content_value|default=''}</textarea>
+                    </p>
+                </div>
+            </div>
+            <div class='col-sm-12' id="contUrlDiv" style="display: none;">
+                <div class='form-group'>
+                    <label>跳转链接</label>
+                    <p>
+                        <input type='text' class='form-control' id='content_url' name='content_value'
+                              value='{$model.content_url|default=""}' autocomplete='off'/></p>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<div class='modal-footer'>
+    <button type='button' class='btn btn-default' data-dismiss='modal'>取消</button>
+    <button type='button' class='btn btn-primary' data-style='zoom-in' id='submit'>提交</button>
+</div>
+
+<script type='text/javascript'>
+    $(document).ready(function () {
+        KindEditor.create('.kindeditor', {
+            allowFileManager: true,
+            width: '100%',
+            height: '380px',
+            extraFileUploadParams: {
+                sessionid: '<?php echo session_id(); ?>'
+            },
+            afterBlur: function () {
+                //编辑器失去焦点时直接同步，可以取到值
+                this.sync();
+            }
+        });
+        changeDiv('{$model.content_type}');
+        $('#content_type').change(function () {
+            changeDiv($('#content_type').val(),);
+        });
+        function validate(){
+            return $('#form').validate({
+                rules: {
+                    name: {
+                        required: true,
+                    },
+                    content_type: {
+                        required: true,
+                    },
+                },
+            }).form();
+        }
+        $('#submit').click(function () {
+            if (validate()) {
+                var load_btn = Ladda.create(this);
+                load_btn.start();
+                var data = new FormData($('#form')[0]);//$('#form').serialize();
+                $.ajax({
+                    type: 'POST',
+                    url: 'save',
+                    data: data,
+                    processData: false,
+                    contentType: false,
+                    success: function (data) {
+                        if (check_status(data)){
+                            $('#modal-lg').modal('hide');
+                            data_table.draw();
+                        }
+                    },
+                    error: function () {
+                        toastr['error']('Error Occurred');
+                    }
+                }).always(function () {
+                    load_btn.stop();
+                });
+            }
+        });
+    });
+    function changeDiv(type) {
+        console.log(type);
+        if(type == 0){
+            $("#contUrlDiv").show();
+            $("#contKDiv").hide();
+        }else{
+            $("#contUrlDiv").hide();
+        }
+        if(type == 1){
+            $("#contKDiv").show();
+            $("#contUrlDiv").hide();
+        }else{
+            $("#contKDiv").hide();
+        }
+    }
+</script>

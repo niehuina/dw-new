@@ -1,0 +1,30 @@
+<extend name="public/user_base"/>
+
+<block name="title"></block>
+<block name="content_right">
+    <div class="block-content pa-20">
+        <div class="font-14 mb-10">
+            个人中心 > <a href="#">消息中心</a>
+        </div>
+        <ul class="message-list">
+            <volist name="records" id="item">
+                <li>
+                    <a class=""
+                       href="{:url('user/message_detail',['id'=>$item['id']])}">
+                        <h3 class="<if condition='$item.is_read eq 0'>color-primary</if>">
+                            <if condition="$item.noti_type eq 'task'">[待办]
+                                <else/>
+                                [系统]
+                            </if>
+                            {$item.subject}
+                        </h3>
+                        <span class="date">{$item.created_time}</span>
+                    </a>
+                </li>
+            </volist>
+        </ul>
+        <html:pager total="$total_page" index="$page"/>
+    </div>
+</block>
+<block name="script">
+</block>

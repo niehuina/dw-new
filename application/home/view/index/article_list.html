@@ -1,0 +1,66 @@
+<extend name="public/base"/>
+
+<block name="title">{$section['name']}</block>
+<block name="content">
+    <div class="container breadcrumb">
+        当前位置： 网站首页 >
+        <if condition="empty($section['url'])">
+            <a href="/home/index/article_list/section_id/{$section['id']}/is_home/1.html">{$section['name']}</a>
+            <else/>
+            <a href="{$section['url']}" target="_blank">{$section['name']}</a>
+        </if>
+    </div>
+
+    <div class="container mt-15">
+        <div class="fl" style="width: 220px;border: 1px solid #eee;padding: 20px;">
+            <if condition="$section['id'] eq 7">
+                <volist name="section_children_list" id="item">
+                    <if condition="$item.id eq '7'">
+                        <if condition="empty($item['url'])">
+                            <a href="{:url('index/article_list',['section_id'=>$item['id']])}"
+                               class="menu <if condition='$item.id eq $section_item.id'>active</if>">{$item.name}</a>
+                            <else/>
+                            <a href="{$item['url']}" target="_blank"
+                               class="menu <if condition='$item.id eq $section_item.id'>active</if>">{$item.name}</a>
+                        </if>
+                    </if>
+                </volist>
+                <else/>
+                <volist name="section_children_list" id="item">
+                    <if condition="$item.id neq '7'">
+                        <if condition="empty($item['url'])">
+                            <a href="{:url('index/article_list',['section_id'=>$item['id']])}"
+                               class="menu <if condition='$item.id eq $section_item.id'>active</if>">{$item.name}</a>
+                            <else/>
+                            <a href="{$item['url']}" target="_blank"
+                               class="menu <if condition='$item.id eq $section_item.id'>active</if>">{$item.name}</a>
+                        </if>
+                    </if>
+                </volist>
+            </if>
+        </div>
+        <div class="block-box fr" style="width: 950px;">
+            <div class="block-title"><label class="color-primary">{$section_item['name']}</label></div>
+            <div class="block-content">
+                <ul class="article-list">
+                    <volist name="section_info_list" id="item">
+                        <li class="bg-icon-0 mb-10">
+                            <div class="fl">
+                                <a class="articleid" title="{$item.title}"
+                                   href="{:url('index/article_detail',['id'=>$item['id']])}">
+                                    {$item.title}
+                                </a>
+                            </div>
+                            <div class="fr"><span class="time">{$item.publish_time}</span></div>
+                            <div class="clear"></div>
+                        </li>
+                    </volist>
+                </ul>
+                <html:pager total="$total_page" index="$page"/>
+            </div>
+        </div>
+        <div class="clear mt-15"></div>
+    </div>
+</block>
+<block name="script">
+</block>

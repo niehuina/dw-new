@@ -1,0 +1,79 @@
+<extend name="public/base"/>
+
+<block name="title"></block>
+
+<block name="content">
+    <div class="container breadcrumb">
+        当前位置： 网站首页 >
+        <if condition="empty($section['url'])">
+            <a href="/home/index/task_list/section_id/5/is_home/1.html">{$section['name']}</a>
+            <else/>
+            <a href="{$section['url']}" target="_blank">{$section['name']}</a>
+        </if>
+        > <a href="/home/index/task_list/type_id/{$task_type['id']}.html">{$task_type['name']}</a>
+        > <a href="#">正文</a>
+    </div>
+    <div class="container mt-15">
+        <div class="fl" style="width: 220px;border: 1px solid #eee;padding: 20px;">
+            <volist name="task_type_list" id="item">
+                <a href="{:url('index/task_list',['type_id'=>$item['id']])}"
+                   class="menu <if condition='$item.id eq $task_type.id'>active</if>">{$item.name}</a>
+            </volist>
+        </div>
+        <div class="block-box fr" style="width: 950px;">
+            <div class="block-content pa-20">
+
+                <div class="article-title">
+                    {$task.title}
+                </div>
+                <div class="article-information">
+                    <span>发布时间: {$task.publish_time}</span>
+                    <span>任务结束时间: {$task.end_time}</span>
+                </div>
+                <div class="article-summary">
+                    {$task.summary}
+                </div>
+                <div class="article-content">
+                    {$task.content}
+                </div>
+
+                <div style="width: 900px;overflow-x: auto;">
+                    <table class="table-main w-100x">
+                        <thead>
+                        <tr>
+                            <th style="min-width: 100px;text-align: center;">人员姓名</th>
+                            <for start="0" end="$item_count">
+                                <th style="min-width: 150px;text-align: center;">项目名称</th>
+                                <th style="min-width: 100px;text-align: center;">完成状态</th>
+                            </for>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <if condition='$item_count eq 0'>
+                            <tr>
+                                <td>没有符合条件的数据</td>
+                            </tr>
+                            <else/>
+                            <volist name="records" id="user">
+                                <tr>
+                                    <td style="text-align: center;">{$user.web_user_name}</td>
+                                    <volist name="user['items']" id="item">
+                                        <td style="text-align: center;">{$item.item_name}</td>
+                                        <td style="text-align: center;color: {$item.item_status_color};">
+                                            {$item.item_status_name}
+                                        </td>
+                                    </volist>
+                                </tr>
+                            </volist>
+                        </if>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+        <div class="clear mt-15"></div>
+    </div>
+</block>
+<block name="script">
+</block>

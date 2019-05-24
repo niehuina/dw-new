@@ -1,0 +1,69 @@
+<div class="modal-header">
+    设置角色
+</div>
+<div class="modal-body ">
+    <form class="  " role="form" id="form">
+        <input type="hidden" name="id" value="{$model.id|default=''}"/>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="form-group">
+                    <label>用户名</label>
+                    <p>
+                        {$model.user_name}
+                    </p>
+                </div>
+                <div class="form-group ">
+                    <label>角色</label>
+                    <p>
+                        <html:select name="role_id" data='role_list' class="form-control"
+                                     selected="model['role_id']" data-value="id" data-key="name"
+                                     first="请选择"/>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+    <button type="button" class="btn btn-primary" data-style="zoom-in" id="submit">提交</button>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        function validateValue() {
+            return $("#form").validate({
+                rules: {
+                    role_id: {
+                        required: true,
+                    }
+                },
+            }).form();
+
+        }
+
+        $("#submit").click(function () {
+            if (validateValue()) {
+                var load_btn = Ladda.create(this);
+                load_btn.start();
+                var submitData = $('#form').serialize();
+                $.ajax({
+                    type: 'POST',
+                    url: "reset_role",
+                    data: submitData,
+                    success: function (data) {
+                        if (check_status(data)) {
+                            $('#modal-sm').modal('hide');
+                            data_table.draw();
+                        }
+                    },
+                    error: function () {
+                        toastr["error"]('修改失败');
+                    }
+                }).always(function () {
+                    load_btn.stop();
+                });
+            }
+        });
+    });
+</script>

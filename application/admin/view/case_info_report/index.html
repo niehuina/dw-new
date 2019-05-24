@@ -1,0 +1,102 @@
+<extend name='public/base'/>
+
+<block name='title'>年度办案统计</block>
+<block name='content'>
+    <div class='row wrapper border-bottom white-bg page-heading'>
+        <div class='col-lg-6'>
+            <h2>年度办案统计</h2>
+            <ol class='breadcrumb'>
+                <li>
+                    <a>检察官办案信息</a>
+                </li>
+                <li class='active'>
+                    <strong>年度办案统计</strong>
+                </li>
+            </ol>
+        </div>
+        <div class='col-lg-6'>
+        </div>
+    </div>
+    <div class='wrapper wrapper-content '>
+        <div class='row'>
+            <div class='col-lg-12'>
+                <div class='ibox float-e-margins'>
+                    <div class='ibox-title'>
+                        <h5>年度办案统计列表</h5>
+                    </div>
+                    <div class='ibox-content'>
+                        <div class="row">
+                            <div class="col-sm-2">
+                                <div class="form-group">
+                                    <div class="input-group date year">
+                                        <input type="text" class="form-control" id="search_year"
+                                               placeholder="选择年度" value="{$search_year|default=''}">
+                                        <span class="input-group-addon green-date-button-able">
+                                        <i class="fa fa-calendar"></i></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <button type="button" id="search-btn" class="btn btn-primary"
+                                        onclick="return data_table.draw();">查询</button>
+                            </div>
+                            <div class="col-sm-8 text-right">
+                                <button type="button" id="export-btn" class="btn btn-primary">导出Excel</button>
+                            </div>
+                        </div>
+                        <div class='table-responsive'>
+                            <table id='data-table' style='width:100%;'
+                                   class='table table-striped table-hover dataTables-example dataTable border-bottom'
+                                   role='grid'>
+                                <thead>
+                                <tr role='row'>
+                                    <th>检察官姓名</th>
+                                    <th>职务</th>
+                                    <th>办案数量</th>
+                                    <th>分管/协管/所在业务部门</th>
+                                    <th>办案分类</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</block>
+<block name='script'>
+    <script type='text/javascript'>
+        $(document).ready(function () {
+            $('.year').datepicker({
+                language: 'zh-CN',
+                format: "yyyy",
+                autoclose: true,
+                startView: 2,
+                maxViewMode: 2,
+                minViewMode: 2,
+                pickerPosition: 'top-left',
+                endDate: new Date()
+            });
+
+            var query = function (params) {
+                // params.query = $('#search-keyword').val();
+                params.search_year = $('#search_year').val();
+            };
+            var columns = [
+                {'data': 'web_user_name'},
+                {'data': 'position_ids'},
+                {'data': 'case_count'},
+                {'data': 'depart_name'},
+                {'data': 'type_name'},
+            ];
+            load_list(query, columns);
+
+            $('#export-btn').click(function () {
+                window.location.href = "export_data?search_year=" + $('#search_year').val();
+            });
+        });
+    </script>
+</block>

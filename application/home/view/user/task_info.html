@@ -1,0 +1,60 @@
+<extend name="public/user_base"/>
+
+<block name="title"></block>
+<block name="content_right">
+    <div class="block-content pa-20">
+        <div class="font-14 mb-10">
+            个人中心 > <a href="/home/user/task.html">任务完成情况</a> > 任务详情
+
+        </div>
+        <div class="article-title">
+            {$task.title}
+        </div>
+        <div class="article-information">
+            <span>任务分类:分类一</span>
+            <span>发布时间:{$task.publish_time}</span>
+            <span>发布人:张三</span>
+            <span>任务结束时间:{$task.end_time}</span>
+        </div>
+        <div class="article-summary">
+            {$task.summary}
+        </div>
+        <div class="article-content">
+            {$task.content}
+        </div>
+        <div>
+            <div class="w-70x fl">
+                <div class="form-group">
+                    <label for="">任务完成情况</label>
+                    <table class="table-main w-100x mt-30">
+                        <thead>
+                        <tr>
+                            <th>项目</th>
+                            <th>完成状态</th>
+                            <th width="80">操作</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <volist name="task_item" id="item">
+                            <tr>
+                                <td style="text-align: left;">{$item.name}</td>
+                                <td style="color:{$item.item_status_color};">{$item.status_name}</td>
+                                <td>
+                                    <if condition="$item.review_status neq 3">
+                                        <a href="{:url('user/task_detail',['id'=>$item['id']])}">提交</a>
+                                        <else/>
+                                        <a href="{:url('user/task_item_info',['id'=>$item['id']])}">查看</a>
+                                    </if>
+                                </td>
+                            </tr>
+                        </volist>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="clear"></div>
+        </div>
+    </div>
+</block>
+<block name="script">
+</block>

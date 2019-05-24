@@ -1,0 +1,168 @@
+<div class='modal-header'>
+    {$edit_state? '修改' : '新增'}
+</div>
+<div class='modal-body '>
+    <form class='' role='form' id='form'>
+        <input type='hidden' id="id" name='id' value='{$model.id|default=""}' />
+        <div class='row'>
+            <div class='col-sm-12'>
+                <div class='form-group'>
+                    <label>用户</label>
+                    <p>
+                        <html:select id="web_user_id" name="web_user_id" data='web_user_list' class="form-control" selected="model['web_user_id']" first="请选择"/>
+                    </p>
+                </div>
+            </div>
+            <div style="display: inline-block; width: 100%; box-sizing: border-box; position:relative; z-index: 3333;">
+                <div id="organ_tree" class="col-sm-12" style="background-color:#FFF;border: 1px solid #e5e6e7;display: none;"></div>
+            </div>
+            <div class='col-sm-12'>
+                <div class="form-group">
+                    <label>党组织机构</label>
+                    <p>
+                        <input type="text" class="form-control" id="node_name" readonly="readonly"
+                               value="{$model.organ_name|default=''}" autocomplete="off"/>
+                    </p>
+                    <input type="hidden" id="node_id" name="organ_id" value="{$model.organ_id|default=''}"/>
+                </div>
+            </div>
+            <div class='col-sm-12'>
+                <div class='form-group'>
+                    <label>入党时间</label>
+                    <div class="input-group date day">
+                        <input type="text" class="form-control" id="join_time" name="join_time" value="{$model.join_time|default=''}"
+                               placeholder="选择日期">
+                        <span class="input-group-addon green-date-button-able"><i class="fa fa-calendar"></i></span>
+                    </div>
+                </div>
+            </div>
+            <div class='col-sm-12 hidden'>
+                <div class='form-group'>
+                    <label>当前积分</label>
+                    <p><input type='text' class='form-control' id='score' name='score' value='{$model.score|default=""}' autocomplete='off'/></p>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<div class='modal-footer'>
+    <button type='button' class='btn btn-default' data-dismiss='modal'>取消</button>
+    <button type='button' class='btn btn-primary' data-style='zoom-in' id='submit'>提交</button>
+</div>
+
+<script type='text/javascript'>
+    $(document).ready(function () {
+        if ($("#id").val()==''){
+            $("#web_user_id").select2();
+        }
+
+        if("{$edit_state}"==1){
+            $("#web_user_id").addClass("pace");
+        }
+        $('.day').datepicker({
+            language: 'zh-CN',
+            format: "yyyy-mm-dd",
+            autoclose: true,
+            pickerPosition: 'top-left',
+			todayHighlight: true,
+			todayBtn: 'linked',
+        });
+
+        function validate(){
+            return $('#form').validate({
+                rules: {
+                    key: {
+                        required: true,
+                    }
+                },
+            }).form();
+        }
+        $('#submit').click(function () {
+            if (validate()) {
+                var load_btn = Ladda.create(this);
+                load_btn.start();
+                var data = $('#form').serialize();
+                $.ajax({
+                    type: 'POST',
+                    url: 'save',
+                    data: data,
+                    success: function (data) {
+                        if (check_status(data)){
+                            $('#modal-sm').modal('hide');
+                            data_table.draw();
+                        }
+                    },
+                    error: function () {
+                        toastr['error']('Error Occurred');
+                    }
+                }).always(function () {
+                    load_btn.stop();
+                });
+            }
+        });
+        var treeId = "organ_tree";
+        $(document).click(function (e) {
+            var el = $(e.target).parents("#" + treeId);
+            if (el.length == 0 || el.length > 0 && el[0].id != treeId) {
+                $("#" + treeId).hide();
+            }
+        });
+
+        $("#node_name").click(function (event) {
+            event.stopPropagation();
+            var A_width = $(this).parent().width();
+            var A_top = $(this).position().top + $(this).outerHeight(true);  //  1
+            var A_left = $(this).position().left;
+            $("#" + treeId).show().css({
+                "position": "absolute",
+                "width": A_width,
+                "top": A_top + "px",
+                "left": A_left + "px"
+            });
+
+            checkSelectNode();
+        });
+        $("#" + treeId).jstree({
+            "core": {
+                'data': {
+                    'url': '/admin/organization/getOrganTree',
+                    'dataType': 'json',
+                    'data': function (node) {
+                        return {'id': node.id};
+                    },
+                    success: function () {
+                        //checkSelectNode();
+                    }
+                },
+                "check_callback": true,
+                'multiple': false,
+            },
+            "plugins": ["wholerow"]
+        }).bind('activate_node.jstree', function (obj, e) {
+            var eventNode = e.node;
+            if (eventNode.parent != "#") {
+                uncheckPreNode();
+                $("#" + treeId).hide();
+                $("#node_id").val(eventNode.id);
+                $("#node_name").val(eventNode.text);
+            } else {
+                var ref = $("#" + treeId).jstree(true);
+                ref.deselect_node(eventNode);
+            }
+        });
+
+        function checkSelectNode() {
+            var node_id = $('#node_id').val();
+            var node = $("#" + treeId).jstree("get_node", "#" + node_id);
+            var ref = $("#" + treeId).jstree(true);
+            ref.select_node(node);
+        }
+
+        function uncheckPreNode() {
+            var node_id = $('#node_id').val();
+            var node = $("#" + treeId).jstree("get_node", "#" + node_id);
+            var ref = $("#" + treeId).jstree(true);
+            ref.deselect_node(node);
+        }
+    });
+</script>

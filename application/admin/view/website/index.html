@@ -1,0 +1,122 @@
+<extend name="public/base"/>
+
+<block name="title">网站信息设置</block>
+<block name="content">
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-lg-10">
+            <h2>网站信息设置</h2>
+            <ol class="breadcrumb">
+                <li>
+                    <a>系统设置</a>
+                </li>
+                <li class="active">
+                    <strong>网站信息设置</strong>
+                </li>
+            </ol>
+        </div>
+        <div class="col-lg-2">
+            <div class="text-center">
+                <button type="button" class="btn btn-primary m-t-lg" data-style="zoom-in" id="submit">提交</button>
+            </div>
+        </div>
+    </div>
+    <div class="wrapper wrapper-content ">
+        <form class="form-horizontal" role="form" id="form" enctype="multipart/form-data">
+            <input type="hidden" name="type[]" value="website"/>
+            <div class="row m-b-lg">
+                <div class="col-lg-12">
+                    <div class="form-group" style="min-height:60px;">
+                        <label class="col-lg-2 control-label">
+                            网站logo<br/>
+                        </label>
+                        <div class="col-lg-4">
+                            <div style="padding: 7px 0;">
+                                <a onclick="$('#file').click()">
+                                    <span>上传</span>
+                                    <i class="fa fa-upload"></i></a>
+                                <span style="font-weight: normal;"> ( 推荐尺寸 100*100 的透明图片)</span></div>
+
+                            <img id="preview" src="{$data['website_logo']['value']|default=''}" style="width: 50%;">
+                            <input id="file" name="file" type="file" accept="image/*" style="display: none;"
+                                   onchange="document.getElementById('preview').src = window.URL.createObjectURL(document.getElementById('file').files[0])">
+                            <input type="hidden" class="form-control" name="website[website_logo]"
+                                   value="{$data['website_logo']['value']|default=''}" autocomplete='off'/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="form-group" style="min-height:60px;">
+                        <label class="col-lg-2 control-label">网站名称</label>
+                        <div class="col-lg-4">
+                            <input type="text" class="form-control" name="website[website_name]"
+                                   value="{$data['website_name']['value']}">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="form-group" style="min-height:60px;">
+                        <label class="col-lg-2 control-label">备案信息</label>
+                        <div class="col-lg-4">
+                            <input type="text" class="form-control" name="website[regist_info]"
+                                   value="{$data['regist_info']['value']}">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="form-group" style="min-height:60px;">
+                        <label class="col-lg-2 control-label">Copyright</label>
+                        <div class="col-lg-4">
+                            <input type="text" class="form-control" name="website[copy_right]"
+                                   value="{$data['copy_right']['value']}">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="form-group" style="min-height:60px;">
+                        <label class="col-lg-2 control-label">网站声明</label>
+                        <div class="col-lg-4">
+                            <input type="text" class="form-control" name="website[website_policy]"
+                                   value="{$data['website_policy']['value']}">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</block>
+<block name="script">
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#submit").click(function () {
+                if (true) {
+                    var load_btn = Ladda.create(this);
+                    load_btn.start();
+                    var submitData = new FormData($('#form')[0]);//$('#form').serialize();
+                    $.ajax({
+                        type: 'POST',
+                        url: "save",
+                        data: submitData,
+                        processData: false,
+                        contentType: false,
+                        success: function (data) {
+                            check_status(data);
+                        },
+                        error: function () {
+                            toastr["error"]('连接失败');
+                        }
+                    }).always(function () {
+                        load_btn.stop();
+                    });
+                }
+            });
+        });
+    </script>
+</block>
