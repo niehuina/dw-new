@@ -421,3 +421,21 @@ span.form-control {
 .table-main.attach .tr a{
     text-align:right;
 }
+
+
+.organ-title {
+    position: relative;
+    padding: 10px 0;
+    border-top: 1px solid #eee;
+}
+
+.organ-title > label {
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.block-content .organ-title:first-child{
+    position: relative;
+    padding: 0 0 10px 0;
+    border-top: unset;
+}

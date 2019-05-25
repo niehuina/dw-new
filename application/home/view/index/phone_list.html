@@ -13,14 +13,17 @@
                 <input type="text" placeholder="姓名/手机号" class="fr phone-search-content">
             </div>
             <div class="block-content">
-                <ul>
-                    <volist name="phone_list" id="item">
-                        <li class="fl w-20x my-10 phone-item">
-                            {$item.name} - {$item.phone}
-                        </li>
-                    </volist>
-                    <li class="clear"></li>
-                </ul>
+                <volist name="organ_list" id="organ">
+                    <div class="organ-title"><label class="color-primary">{$organ.name}</label></div>
+                    <ul>
+                        <volist name="organ['phone_list']" id="item">
+                            <li class="fl w-20x my-10 phone-item">
+                                {$item.name} - {$item.phone}
+                            </li>
+                        </volist>
+                        <li class="clear"></li>
+                    </ul>
+                </volist>
             </div>
         </div>
     </div>
@@ -52,28 +55,6 @@
                     search();
                 }
             });
-
-            var num = 0;
-
-            function go_left() {
-                if (num < (1000 - $("#scroll_left ul").width())) {
-                    num = 0;
-                }
-                num -= 1;
-                $("#scroll_left ul").css({
-                    left: num
-                })
-            }
-
-            var timer = setInterval(go_left, 50);
-            $("#scroll_left").hover(function () {
-                    clearInterval(timer);
-                },
-                function () {
-                    timer = setInterval(go_left, 50);
-                });
-
-            $('#banner').slideBox();
         });
 
     </script>

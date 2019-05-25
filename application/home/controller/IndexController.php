@@ -7,6 +7,7 @@ use app\admin\model\TaskUser;
 use app\home\model\Banner;
 use app\home\common\Constant;
 use app\home\model\CaseInfo;
+use app\home\model\Organization;
 use app\home\model\PublishType;
 use app\home\model\Section;
 use app\home\model\SectionInfo;
@@ -122,9 +123,24 @@ class IndexController extends BaseController
 
     public function phone_list()
     {
-        $phone_list = $this->get_phone_list(20, '');
-        $phone_list = json_decode($phone_list, true);
-        $this->assign('phone_list', $phone_list['result']);
+        $organ_list = Organization::all(['deleted'=>0]);
+
+        foreach ($organ_list as $key=>$organ)
+        {
+            $where['organ_id'] = $organ->id;
+            $user_list = WebUser::get_list($where, 'name,phone', 0, 0);
+            if(count($user_list) > 0){
+                $organ_list[$key]['phone_list'] = $user_list;
+            }else{
+                unset($organ_list[$key]);
+            }
+        }
+
+        $this->assign('organ_list', $organ_list);
+
+//        $phone_list = $this->get_phone_list(20, '');
+//        $phone_list = json_decode($phone_list, true);
+//        $this->assign('phone_list', $phone_list['result']);
         return view();
     }
 

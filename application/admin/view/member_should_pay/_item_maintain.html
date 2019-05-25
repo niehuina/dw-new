@@ -3,8 +3,7 @@
 </div>
 <div class='modal-body '>
     <form class='' role='form' id='form'>
-        <input type='hidden' name='id' value='{$model.id|default=""}' />
-        <input type='hidden' name='web_user_id' value='{$model.web_user_id|default=""}' />
+        <input type='hidden' name='id' value='{$model.id|default=""}'/>
         <div class='row'>
             <div class='col-sm-12'>
                 <div class='form-group'>
@@ -12,7 +11,7 @@
                     <p>
                         <if condition="$edit_state eq false">
                             <html:select id="web_user_id" name="web_user_id" data='web_user_list' class="form-control"
-                                         selected="model['web_user_id']" first="请选择"/>
+                                         selected="model['web_user_id']" first="{$model['first_text']}"/>
                             <else/>
                             <input class='form-control' type="text" id="web_user_name" readonly="readonly"
                                    value="{$model.web_user_name|default=''}">
@@ -24,11 +23,16 @@
             </div>
             <div class='col-sm-12'>
                 <div class='form-group'>
-                    <label>积分项目</label>
-                    <p>
-                        <html:select id="score_item_id" name="score_item_id" data='score_item_list' class="form-control"
-                                     selected="model['score_item_id']" first="请选择"/>
-                    </p>
+                    <label>年份</label>
+                    <p><input type='text' class='form-control' id='year' name='year' readonly="readonly"
+                              value='{$model.year|default=""}' autocomplete='off'/></p>
+                </div>
+            </div>
+            <div class='col-sm-12'>
+                <div class='form-group'>
+                    <label></label>
+                    <p><input type='text' class='form-control' id='money' name='money' value='{$model.money|default=""}'
+                              autocomplete='off'/></p>
                 </div>
             </div>
         </div>
@@ -41,21 +45,24 @@
 
 <script type='text/javascript'>
     $(document).ready(function () {
-        if("{$edit_state}"=="1"){
-            $("#web_user_id").addClass("pace");
-        }
-        function validate(){
+        function validate() {
             return $('#form').validate({
                 rules: {
                     web_user_id: {
                         required: true,
                     },
-                    score_item_id:{
+                    year: {
                         required: true,
-                    }
+                        number:true,
+                    },
+                    money: {
+                        required: true,
+                        number:true,
+                    },
                 },
             }).form();
         }
+
         $('#submit').click(function () {
             if (validate()) {
                 var load_btn = Ladda.create(this);
@@ -66,7 +73,7 @@
                     url: 'save',
                     data: data,
                     success: function (data) {
-                        if (check_status(data)){
+                        if (check_status(data)) {
                             $('#modal-sm').modal('hide');
                             data_table.draw();
                         }

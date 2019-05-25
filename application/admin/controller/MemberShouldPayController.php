@@ -3,18 +3,13 @@
 namespace app\admin\controller;
 
 use app\admin\common\Cache;
-use app\admin\model\ScoreHistory;
+use app\admin\model\MemberShouldPay;
 use app\admin\common\Constant;
-use think\Db;
-use think\Request;
 
-class ScoreHistoryController extends BaseController
+class MemberShouldPayController extends BaseController
 {
     public function index()
     {
-        $score_item_list = db('score_item')->where(['deleted' => 0])->column('id,name');
-        $this->assign('score_item_list', $score_item_list);
-
         return view();
     }
 
@@ -22,39 +17,23 @@ class ScoreHistoryController extends BaseController
     {
         $start = $this->request->param('start');
         $length = $this->request->param('length');
-        $search_score_item = $this->request->param('search_score_item');
-        $web_user_id = $this->request->param('web_user_id');
         $map = $this->process_query('wu.name');
-        if (!empty($search_score_item)) {
-            $map['score_history.score_item_id'] = $search_score_item;
-        }
-        $map['score_history.deleted'] = '0';
-        if ($web_user_id) {
-            $map['web_user_id'] = $web_user_id;
-        }
-
-        $map['year(score_history.created_time)'] = date('Y');
+        $map['member_should_pay.deleted'] = '0';
+        $map['member_should_pay.year'] = date('Y');
 
         $order = 'CONVERT(wu.name USING gbk) asc';
-        $recordCount = db('score_history')
-            ->join('web_user wu', 'wu.deleted=0 and wu.id=score_history.web_user_id', 'left')
+        $recordCount = db('member_should_pay')
+            ->join('web_user wu', 'wu.id=member_should_pay.web_user_id and wu.deleted =0', 'left')
             ->where($map)->count();
-        $records = db('score_history')
-            ->join('web_user wu', 'wu.deleted=0 and wu.id=score_history.web_user_id', 'left')
-            ->where($map)
-            ->field('score_history.id,score_history.web_user_id,score_history.score_item_id,
-                        score_history.review_user_id,score_history.review_time,score_history.review_status,
-                        score_history.created_time as get_time,score_history.updated_time, wu.name as web_user_name,
-                        score_item.name as score_item_name,score_item.score as score_item_score,score_item.created_time as score_item_created_time')
-            ->join('score_item', 'score_item.id = score_history.score_item_id', 'LEFT')
+        $records = db('member_should_pay')->where($map)
+            ->join('web_user wu', 'wu.id=member_should_pay.web_user_id and wu.deleted =0', 'left')
+            ->field('member_should_pay.id,member_should_pay.web_user_id,member_should_pay.year,member_should_pay.money,
+                          member_should_pay.created_time,member_should_pay.updated_time,
+                          wu.name as web_user_name')
             ->limit($start, $length)->order($order)->select();
 
-        $admin_user_list = Cache::key_value('user');
         foreach ($records as $key => $item) {
-            if (!empty($item['review_user_id'])) {
-                $records[$key]['review_user_id'] = $admin_user_list[$item['review_user_id']];
-            }
-            $records[$key]['review_status_name'] = get_value($item['review_status'], Constant::REVIEW_STATUS);
+            //$records[$key]['type'] = get_value($item['type'], Constant::TYPE_LIST);
         }
 
         return json(array(
@@ -68,35 +47,43 @@ class ScoreHistoryController extends BaseController
     public function _item_maintain()
     {
         $id = $this->request->param('id');
-        //$web_user_id = $this->request->param('web_user_id');
         $model = null;
         $edit_state = false;
-
         if (!empty($id)) {
-            $model = ScoreHistory::get($id);
+            $model = MemberShouldPay::get($id);
             $web_user_list = Cache::key_value('web_user');
-            $model['web_user_name'] = get_value($model['web_user_id'],$web_user_list);
+            $model['web_user_name'] = get_value($model['web_user_id'], $web_user_list);
             $edit_state = true;
         }
 
-        $score_item_list = Cache::key_value('score_item');
         $web_user_list = array();
         if (!$edit_state) {
             $order = 'CONVERT(wu.name USING gbk) asc';
             $map['pm.deleted'] = '0';
+            $map['pay.web_user_id'] = ['EXP','IS NULL'];
+
             $list = db('party_member pm')
-                ->join('web_user wu', 'wu.deleted =0 and wu.id=pm.web_user_id', 'left')
+                ->join('web_user wu', 'wu.id=pm.web_user_id and wu.deleted =0', 'left')
+                ->join('member_should_pay pay', 'wu.id=pay.web_user_id and pay.deleted =0 and pay.year=' . date('Y'), 'left')
                 ->where($map)
                 ->field('wu.id,wu.name')
                 ->order($order)->select();
             foreach ($list as $item) {
                 $web_user_list[$item['id']] = $item['name'];
             }
+
+            $model['year'] = date('Y');
+
+            if(count($web_user_list)){
+                $model['first_text'] =  '请选择';
+            }else{
+                $model['first_text'] =  '当前年度应缴党费已设置完毕';
+            }
         }
+
 
         $this->assign('model', $model);
         $this->assign('edit_state', $edit_state);
-        $this->assign('score_item_list', $score_item_list);
         $this->assign('web_user_list', $web_user_list);
         return view();
     }
@@ -111,13 +98,12 @@ class ScoreHistoryController extends BaseController
             ));
         }
         if (empty($data['id'])) {
-            $model = new ScoreHistory ();
-            $data['review_status'] = Constant::REVIEW_STATUS_WATING;
+            $model = new MemberShouldPay ();
             $data['deleted'] = 0;
             $data['created_user_id'] = $this->userId;
             $data['created_time'] = date('Y-m-d H:i:s');
         } else {
-            $model = ScoreHistory::get($data['id']);
+            $model = MemberShouldPay::get($data['id']);
             if (empty($model)) {
                 return json(array(
                     'status' => 0,
@@ -138,7 +124,7 @@ class ScoreHistoryController extends BaseController
     public function delete()
     {
         $id = $this->request->param('id');
-        $model = ScoreHistory::get($id);
+        $model = MemberShouldPay::get($id);
         if (empty($model)) {
             return json(array(
                 'status' => 0,
@@ -163,7 +149,7 @@ class ScoreHistoryController extends BaseController
         if (!empty($id)) {
             $where['id'] = array('<>', $id);
         }
-        $list = db('score_history')->where($where)->count();
+        $list = db('member_should_pay')->where($where)->count();
         if ($list > 0) {
             return true;
         }

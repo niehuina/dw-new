@@ -28,6 +28,9 @@ class Common
 
         $permission = array('id' => 'system.block5', 'text' => '党务检务公开');
         $permission['children'][] = array('id' => 'system.score_item', 'text' => '党员积分项目');
+        $permission['children'][] = array('id' => 'system.score_history', 'text' => '党员积分管理');
+        $permission['children'][] = array('id' => 'system.member_should_pay', 'text' => '应缴党费管理');
+        $permission['children'][] = array('id' => 'system.member_due_history', 'text' => '缴纳党费管理');
         $permission['children'][] = array('id' => 'system.score_history_review', 'text' => '党员积分审核');
         $permission['children'][] = array('id' => 'system.should_pay_list', 'text' => '党费缴纳统计');
         $system['children'][] = $permission;
@@ -69,9 +72,9 @@ class Common
     public static function get_menu_permissions($is_admin, $permissions)
     {
         $menus = array();
-        /*if ($is_admin) {
+        if ($is_admin) {
             array_push($menus, array('code', '代码管理', 'home'));
-        }*/
+        }
         $menu = array('', '系统设置', 'gears');
         if ($is_admin || in_array('system.user', $permissions)) {
             $menu['children'][] = array('user', '后台用户');
@@ -121,6 +124,17 @@ class Common
         if ($is_admin || in_array('system.score_item', $permissions)) {
             $menu['children'][] = array('score_item', '党员积分项目');
         }
+
+        if ($is_admin || in_array('system.score_history', $permissions)) {
+            $menu['children'][] = array('score_history', '党员积分管理');
+        }
+        if ($is_admin || in_array('system.member_should_pay', $permissions)) {
+            $menu['children'][] = array('member_should_pay', '应缴党费管理');
+        }
+        if ($is_admin || in_array('system.member_due_history', $permissions)) {
+            $menu['children'][] = array('member_due_history', '缴纳党费管理');
+        }
+
         if ($is_admin || in_array('system.score_history_review', $permissions)) {
             $menu['children'][] = array('score_history_review', '党员积分审核');
         }
