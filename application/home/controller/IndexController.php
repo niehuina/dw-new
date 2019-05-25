@@ -425,6 +425,8 @@ class IndexController extends BaseController
             $start = (intval($page) - 1) * $length;
         }
 
+        $search_year = date('Y');
+        $map['year(case_info.accept_time)'] = $search_year;
         $map['case_info.web_user_id'] = $web_user_id;
         $order = 'case_info.accept_time desc';
         $total_count = db('case_info')

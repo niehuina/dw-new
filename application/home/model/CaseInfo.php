@@ -51,7 +51,7 @@ class CaseInfo extends Model
         }
         $count = db('web_user wu')
             ->join('setting', 'setting.id = wu.user_type and setting.type="user_type" and setting.code="prosecutor"')
-            ->join('case_info ci', 'wu.id=ci.web_user_id and year(ci.accept_time)='.$search_year, 'LEFT')
+            ->join('case_info ci', 'wu.id=ci.web_user_id and year(ci.accept_time)='.$search_year, 'INNER')
             ->join('organization org', 'org.id=wu.organ_id', 'LEFT')
             ->field('wu.name as web_user_name,ci.web_user_id, wu.position_ids, 
                 org.name as depart_name, count(ci.web_user_id) as case_count')
@@ -84,7 +84,7 @@ class CaseInfo extends Model
             $records[$key]['position_ids'] = implode(' | ', $list);
 
             $case_list = db('case_info')
-                ->where(['web_user_id'=>$item['web_user_id']])
+                ->where(['web_user_id'=>$item['web_user_id'], 'year(case_info.accept_time)'=>$search_year])
                 ->field('web_user_id, user_name, type_name, count(web_user_id) as case_count')
                 ->group('web_user_id, user_name, type_name')->select();
 
