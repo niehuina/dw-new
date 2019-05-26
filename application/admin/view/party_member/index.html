@@ -53,7 +53,7 @@
                                     <th>当年应缴党费（元）</th>
                                     <th>当年已交党费（元）</th>
                                     <th>当年待交党费（元）</th>
-                                    <th width='250px'></th>
+                                
                                     <th width='100px'></th>
                                 </tr>
                                 </thead>
@@ -82,14 +82,7 @@
                 {'data': 'year_should_pay'},
                 {'data': 'year_paid_money'},
                 {'data': 'year_remaining_pay'},
-                {
-                    'data': null,
-                    'render': function (data) {
-                        return '<a href="/admin/score_history/index.html?web_user_id='+data.web_user_id+'&referer=/admin/party_member/index.html">积分明细</a>'+' | ' +
-                            '<a href="_should_pay_cost/party_member_id/'+data.id+'.html"  data-toggle="modal" data-target="#modal-sm" >应缴党费</a>'+' | ' +
-                            '<a href="_pay_cost/web_user_id/'+data.web_user_id+'.html"  data-toggle="modal" data-target="#modal-md" >缴纳党费</a>' ;
-                    }
-                },
+
                 {
                     'data': null,
                     'render': function (data) {
