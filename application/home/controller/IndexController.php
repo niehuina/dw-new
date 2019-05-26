@@ -29,7 +29,20 @@ class IndexController extends BaseController
     {
         $list_count = 8;
 
-        $case_list = CaseInfo::get_list('id,number,name', 0, 10);
+        $search_year = date('Y');
+        $where['year(accept_time)'] = $search_year;
+        $case_list = db('case_info')
+            ->where($where)
+            ->field('web_user_id, max(accept_time) as max_accept_time')
+            ->group('web_user_id')
+            ->order('max_accept_time desc')
+            ->limit(0,15)->select();
+
+        foreach ($case_list as $key=>$case)
+        {
+            $case_list[$key] = WebUser::get($case['web_user_id']);
+        }
+
         $this->assign('case_list', $case_list);
 
         $publicity_court_list = SectionInfo::get_list(Constant::SETION_PUBLICITY_COURT, [], 'si.*', 0, $list_count);

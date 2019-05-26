@@ -91,7 +91,7 @@ class CaseInfoReportController extends BaseController
             $records[$key]['position_ids'] = implode(' | ', $list);
 
             $case_list = db('case_info')
-                ->where(['web_user_id'=>$item['web_user_id']])
+                ->where(['web_user_id'=>$item['web_user_id'], 'year(case_info.accept_time)'=>$search_year])
                 ->field('web_user_id, user_name, type_name, count(web_user_id) as case_count')
                 ->group('web_user_id, user_name, type_name')->select();
 
