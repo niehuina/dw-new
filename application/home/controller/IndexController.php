@@ -572,11 +572,11 @@ class IndexController extends BaseController
             ->join('(' . $join_sql . ') T ', 'T.web_user_id=pm.web_user_id', 'left')
             ->join('member_should_pay s ', 's.web_user_id=pm.web_user_id and s.year=' . $current_year . ' and s.deleted=0', 'left')
             ->where($map)
-            ->field('pm.id,pm.web_user_id,pm.organ_id,pm.join_time,pm.score,pm.created_time,
-                            pm.updated_time,CONCAT(year(from_days(datediff(now(), join_time))),\' 年\') as age,
-                            org.name as organ_name,ifnull(T.total_score,0) as total_score,
-                            (ifnull(s.money,0) * 12) as year_should_pay,
-                            wu.name as web_user_name')
+            ->field('pm.id,pm.web_user_id,pm.organ_id,pm.join_time,pm.score,pm.created_time,pm.updated_time,
+                        case when year(from_days(datediff(now(), join_time))) >= 1 then year(NOW())-year(join_time) else 0 end as age,
+                        org.name as organ_name,ifnull(T.total_score,0) as total_score,
+                        (ifnull(s.money,0) * 12) as year_should_pay,
+                        wu.name as web_user_name')
             ->limit($start, $length)->order($order)->select();
 
         foreach ($records as $key => $item) {
@@ -600,6 +600,7 @@ class IndexController extends BaseController
             $records[$key]['year_paid_month'] = $year_paid_month;
             $records[$key]['year_paid_money'] = number_format($year_paid_money, 2);
             $records[$key]['year_remaining_pay'] = number_format($item['year_should_pay'] - $year_paid_money, 2);
+            $records[$key]['age'] = $item['age'].'年';
         }
 
         $total_page = $total_count % $length ? intval($total_count / $length) + 1 : $total_count / $length;
