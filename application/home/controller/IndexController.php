@@ -30,11 +30,13 @@ class IndexController extends BaseController
         $list_count = 8;
 
         $search_year = date('Y');
-        $where['year(accept_time)'] = $search_year;
-        $case_list = db('case_info')
+        $where['year(ci.accept_time)'] = $search_year;
+        $case_list = db('case_info ci')
+            ->join('web_user wu', 'wu.id=ci.web_user_id and year(ci.accept_time)='.$search_year, 'INNER')
+            ->join('setting', 'setting.id = wu.user_type and setting.type="user_type" and setting.code="prosecutor"')
             ->where($where)
-            ->field('web_user_id, max(accept_time) as max_accept_time')
-            ->group('web_user_id')
+            ->field('ci.web_user_id, max(ci.accept_time) as max_accept_time')
+            ->group('ci.web_user_id')
             ->order('max_accept_time desc')
             ->limit(0,15)->select();
 
