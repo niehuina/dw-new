@@ -72,9 +72,9 @@ class Common
     public static function get_menu_permissions($is_admin, $permissions)
     {
         $menus = array();
-        if ($is_admin) {
-            array_push($menus, array('code', '代码管理', 'home'));
-        }
+//        if ($is_admin) {
+//            array_push($menus, array('code', '代码管理', 'home'));
+//        }
         $menu = array('', '系统设置', 'gears');
         if ($is_admin || in_array('system.user', $permissions)) {
             $menu['children'][] = array('user', '后台用户');
