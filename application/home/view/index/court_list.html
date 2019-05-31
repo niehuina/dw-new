@@ -5,7 +5,7 @@
     <div class="container breadcrumb">
         当前位置： 网站首页 >
         <if condition="empty($section_item['url'])">
-            <a href="/home/index/case_list/section_id/{$section_id}.html">{$section_item['name']}</a>
+            <a href="/home/index/court_list/section_id/{$section_id}.html">{$section_item['name']}</a>
             <else/>
             <a href="{$section_item['url']}" target="_blank">{$section_item['name']}</a>
         </if>
@@ -13,7 +13,7 @@
     <div class="container mt-15">
         <div class="fl" style="width: 220px;border: 1px solid #eee;padding: 20px;">
             <if condition="empty($section_item['url'])">
-                <a href="{:url('index/case_list',['section_id'=>$section_item['id']])}"
+                <a href="{:url('index/court_list',['section_id'=>$section_item['id']])}"
                    class="menu active">{$section_item['name']}</a>
                 <else/>
                 <a href="{$section_item['url']}" target="_blank" class="menu active">{$section_item['name']}</a>

@@ -50,7 +50,7 @@
             </div>
             <div class='col-sm-6'>
                 <div class='form-group'>
-                    <label>是否公开</label>
+                    <label>是否公开审理</label>
                     <p>
                         <html:radio name="is_open" data='is_open_list' class="checkbox-initem i-checks"
                                     checked="model['is_open']"/>
@@ -77,6 +77,9 @@
             todayBtn: true,
             pickerPosition: "bottom-left"
         });
+        $(".input-group-addon").click(function () {
+            $('#court_time').focus();
+        });
         $('.i-checks').iCheck({
             checkboxClass: 'icheckbox_square-green',
             radioClass: 'iradio_square-green',
@@ -99,7 +102,7 @@
                     court_where: {
                         required: true,
                     },
-                    'web_user_id[]': {
+                    'web_user_ids[]': {
                         required: true,
                     },
                     procedure: {
