@@ -24,7 +24,7 @@ class WebUserController extends BaseController
         $map = $this->process_query('web_user.user_name|web_user.name|web_user.id_number|web_user.phone');
         $map['web_user.deleted'] = '0';
 
-        $order = 'CONVERT(org.name USING gbk) asc, CONVERT(web_user.name USING gbk) asc';
+        $order = 'CONVERT(org.name USING gbk) asc, web_user.user_type asc, CONVERT(web_user.name USING gbk) asc';
         $recordCount = db('web_user')
             ->join('organization org', 'org.id=web_user.organ_id')->where($map)->count();
         $records = db('web_user')

@@ -16,29 +16,21 @@
     <link type="text/css" rel="stylesheet" href="/public/static/home/css/core.css">
     <link type="text/css" rel="stylesheet" href="/public/static/home/font-awesome/css/font-awesome.css">
     <link type="text/css" rel="stylesheet" href="/public/static/home/css/plugins/slideBox/slideBox.css">
+    <style type="text/css">
+        .container{
+            width: 1000px;
+            margin: 0;
+        }
+    </style>
 </head>
 
 <block name="content">
-
     <div class="container"
          style="position:relative; margin-top:15px;border:1px solid #eeeeee;height: 40px; background: url(/public/static/home/img/bg_notice.png)">
-        <div class="color-primary h3 font-bold" style="position: absolute;top: 10px;left: 20px;">办案公示</div>
-<!--        <if condition="empty($sec_list[7])">-->
-<!--            <a class="more" href="{:url('index/article_list',['section_id'=>7])}">更多</a>-->
-<!--            <else/>-->
-<!--            <a class="more" href="{$sec_list[7]}" target="_blank">更多</a>-->
-<!--        </if>-->
+        <div class="color-primary h3 font-bold" style="position: absolute;top: 10px;left: 20px;">出庭公示:</div>
         <div id="scroll_left" class="color-primary"
-             style="width: 1000px;padding: 0 40px; margin-left: 100px; font-size: 14px; height: 40px; overflow: hidden;position: relative">
-            <ul style="white-space: nowrap; position: absolute;left: 0;top: 10px;">
-                <volist name="publicity_court_list" id="item">
-                    <li class="bg-icon-0 mr-20 d-inline">
-                        <a class="" target="_blank"
-                           href="{:url('index/publicity_court_detail',['id'=>$item['id']])}">
-                            {$item.title}
-                        </a>
-                    </li>
-                </volist>
+             style="width: 900px;margin-left: 100px; font-size: 14px; height: 40px; overflow: hidden;position: relative">
+            <ul style="white-space: nowrap; position: absolute;left: 0;top: 10px;width: 100%;" id="show">
             </ul>
         </div>
     </div>
@@ -52,28 +44,63 @@
 <script src="/public/static/home/js/common/common.js"></script>
 <block name="script">
     <script>
+        var record_count = 0;
+        var record_index = 0;
+
+        var _t = null;
         $(function () {
-            var num = 0;
+            get_record(0);
 
-            function go_left() {
-                if (num < (1000 - $("#scroll_left ul").width())) {
-                    num = 0;
-                }
-                num -= 1;
-                $("#scroll_left ul").css({
-                    left: num
-                })
-            }
+            _t = setInterval(autoScroll, 3000);
 
-            var timer = setInterval(go_left, 50);
-            $("#scroll_left").hover(function () {
-                    clearInterval(timer);
+            $("#scroll_left").hover(
+                function(){
+                    clearInterval(_t);
                 },
-                function () {
-                    timer = setInterval(go_left, 50);
+                function(){
+                    _t = setInterval(autoScroll,2800);
                 }
-            );
+            )
         });
 
+        function autoScroll(){
+            $('#scroll_left li:first').animate({'marginTop': '-30', 'opacity': '0'}, 'slow', function () {
+                get_record(record_index);
+                $(this).remove();
+            });
+        }
+
+        function get_record(i) {
+            $.ajax({
+                type: 'POST',
+                url: "get_record",
+                data: {
+                    "record_index": i,
+                },
+                success: function (result) {
+                    var data = result.data;
+
+                    var html = '<li class="mr-20 d-inline w-100x">' +
+                        '           <a class="" target="_blank" href="publicity_court_detail?id='+data.id+'">'
+                        + data.name+'&nbsp;&nbsp;'
+                        + data.court_time+'&nbsp;&nbsp;'
+                        + data.court_where+'&nbsp;&nbsp;'
+                        + data.web_user_name+'&nbsp;&nbsp;'
+                        + data.procedure+'&nbsp;&nbsp;'
+                        + data.is_open +
+                        '</a></li>';
+
+                    $("#show").append(html);
+
+                    record_index = result.record_index;
+                    record_count = result.count;
+                    var resource = result.resource;
+                },
+                error: function () {
+                    toastr.remove();
+                    toastr.error('Error Occurred');
+                }
+            });
+        }
     </script>
 </block>

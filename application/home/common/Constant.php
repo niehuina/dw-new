@@ -59,4 +59,7 @@ class Constant
     const SETION_TASK_INFO = 5;
     const SETION_NEWS = 6;
     const SETION_PUBLICITY_COURT = 7;
+
+    const IS_OPEN = [1 => '公开审理', 0 => '不公开审理'];
+    const PROCEDURE_TYPE = ['general'=>'普通程序', 'simple'=>'简易程序','quick'=>'速裁程序'];
 }

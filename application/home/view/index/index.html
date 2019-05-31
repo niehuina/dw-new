@@ -5,20 +5,24 @@
 
     <div class="container"
          style="position:relative; margin-top:15px;border:1px solid #eeeeee;height: 40px; background: url(/public/static/home/img/bg_notice.png)">
-        <div class="color-primary h3 font-bold" style="position: absolute;top: 10px;left: 20px;">办案公示</div>
+        <div class="color-primary h3 font-bold" style="position: absolute;top: 10px;left: 20px;">{$search_year}年员额检察官办案情况公示：</div>
         <if condition="empty($sec_list[3])">
             <a class="more" href="{:url('index/case_list',['section_id'=>3])}">更多</a>
             <else/>
             <a class="more" href="{$sec_list[3]}" target="_blank">更多</a>
         </if>
         <div id="scroll_left" class="color-primary"
-             style="width: 1000px;padding: 0 40px; margin-left: 100px; font-size: 14px; height: 40px; overflow: hidden;position: relative">
-            <ul style="white-space: nowrap; position: absolute;left: 0;top: 10px;">
+             style="width: 800px;margin-left: 300px; font-size: 14px; height: 40px; overflow: hidden;position: relative">
+            <ul style="white-space: nowrap; position: absolute;left: 0;top: 10px;width: 100%;">
                 <volist name="case_list" id="item">
-                    <li class="bg-icon-0 mr-20 d-inline">
+                    <li class="mr-20 d-inline w-100x">
                         <a class=""
-                           href="{:url('index/case_detail',['web_user_id'=>$item['id']])}">
-                            {$item.name}
+                           href="{:url('index/case_detail',['web_user_id'=>$item['web_user_id']])}">
+                            {$item.web_user_name}
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            {$item.user_type_name}
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            当年办案数量：{$item.case_count}
                         </a>
                     </li>
                 </volist>
@@ -30,8 +34,10 @@
             <div id="banner" class="slideBox" style="width: 760px; height: 315px;">
                 <ul class="items">
                     <volist name="banner_list" id="banner">
-                        <li><a href="{$banner.redirect_url}" title="{$banner.title}"><img src="{$banner.picture_url}"
-                                                                                          width="760" height="315"></a>
+                        <li>
+                            <a href="{$banner.redirect_url}" title="{$banner.title}">
+                                <img src="{$banner.picture_url}" idth="760" height="315">
+                            </a>
                         </li>
                     </volist>
                 </ul>
@@ -42,7 +48,7 @@
                 <div class="block-title">
                     <label class="color-primary">出庭公告</label><span></span>
                     <if condition="empty($sec_list[7])">
-                        <a class="more" href="{:url('index/article_list',['section_id'=>7])}">更多</a>
+                        <a class="more" href="{:url('index/court_list',['section_id'=>7])}">更多</a>
                         <else/>
                         <a class="more" href="{$sec_list[7]}" target="_blank">更多</a>
                     </if>
@@ -52,13 +58,13 @@
                         <volist name="publicity_court_list" id="item">
                             <li class="bg-icon-0 mb-12">
                                 <div class="fl">
-                                    <a class="article-link w-250" title="{$item.title}"
-                                       href="{:url('index/article_detail',['id'=>$item['id']])}">
-                                        {$item.title}
+                                    <a class="article-link w-250" title="{$item.name}"
+                                       href="{:url('index/court_detail',['id'=>$item['id']])}">
+                                        {$item.name}
                                     </a>
                                 </div>
                                 <div class="fr"><span
-                                        class="time">{$item.publish_time|strtotime|date='Y-m-d',###}</span></div>
+                                        class="time">{$item.court_time|strtotime|date='Y-m-d',###}</span></div>
                                 <div class="clear"></div>
                             </li>
                         </volist>
@@ -258,13 +264,20 @@
                 })
             }
 
-            var timer = setInterval(go_left, 50);
+            function autoScroll() {
+                $('#scroll_left li:first').animate({'marginTop': '-30', 'opacity': '0'}, 'slow', function () {
+                    $(this).removeAttr('style').insertAfter('#scroll_left li:last');
+                });
+            }
+
+            var timer = setInterval(autoScroll, 3000);
             $("#scroll_left").hover(function () {
                     clearInterval(timer);
                 },
                 function () {
-                    timer = setInterval(go_left, 50);
-                });
+                    timer = setInterval(autoScroll, 3000);
+                }
+            );
 
             $('#banner').slideBox();
         });

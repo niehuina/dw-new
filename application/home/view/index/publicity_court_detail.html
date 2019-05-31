@@ -16,24 +16,39 @@
     <link type="text/css" rel="stylesheet" href="/public/static/home/css/core.css">
     <link type="text/css" rel="stylesheet" href="/public/static/home/font-awesome/css/font-awesome.css">
     <link type="text/css" rel="stylesheet" href="/public/static/home/css/plugins/slideBox/slideBox.css">
+    <style type="text/css">
+        .container{
+            width: 1000px;
+        }
+    </style>
 </head>
 
 <block name="content">
-    <div class="container mt-15">
-        <div class="" style="width: 1150px;">
-            <div class="block-content pa-20">
-                <div class="article-title">
-                    {$section_info.title}
-                </div>
-                <div class="article-information">
-                    <span>发布时间:{$section_info.publish_time}</span>
-                </div>
-                <div class="article-summary">
-                    {$section_info.summary}
-                </div>
-                <div class="article-content">
-                    {$section_info.content}
-                </div>
+    <div class="">
+        <div class="" style="width: 1000px;">
+            <div class="block-content">
+                <table class="table-main w-100x">
+                    <thead>
+                    <tr>
+                        <th>案件名称</th>
+                        <th>开庭时间</th>
+                        <th>开庭地点</th>
+                        <th>公诉人</th>
+                        <th>审判程序</th>
+                        <th>是否公开</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr class="pager">
+                        <td>{$publicity_court['name']}</td>
+                        <td>{$publicity_court['court_time']}</td>
+                        <td>{$publicity_court['court_where']}</td>
+                        <td>{$publicity_court['web_user_name']}</td>
+                        <td>{$publicity_court['procedure']}</td>
+                        <td>{$publicity_court['is_open']}</td>
+                    </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
         <div class="clear mt-15"></div>

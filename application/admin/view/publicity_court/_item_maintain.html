@@ -3,43 +3,49 @@
 </div>
 <div class='modal-body '>
     <form class='' role='form' id='form'>
-        <input type='hidden' name='id' value='{$model.id|default=""}' />
+        <input type='hidden' name='id' value='{$model.id|default=""}'/>
         <div class='row'>
-            <div class='col-sm-6'>
+            <div class='col-sm-12'>
                 <div class='form-group'>
                     <label>案件名称</label>
-                    <p><input type='text' class='form-control' id='name' name='name' value='{$model.name|default=""}' autocomplete='off'/></p>
+                    <p><input type='text' class='form-control' id='name' name='name' value='{$model.name|default=""}'
+                              autocomplete='off'/></p>
                 </div>
             </div>
             <div class='col-sm-6'>
                 <div class='form-group'>
                     <label>开庭时间</label>
-                    <p>
                     <div class="input-group date day">
                         <input type="text" class="form-control" id="court_time" name="court_time"
                                value="{$model.court_time|default=''}"
                                placeholder="选择日期">
                         <span class="input-group-addon green-date-button-able"><i class="fa fa-calendar"></i></span>
                     </div>
-                    </p>
                 </div>
             </div>
             <div class='col-sm-6'>
                 <div class='form-group'>
                     <label>开庭地点</label>
-                    <p><input type='text' class='form-control' id='court_where' name='court_where' value='{$model.court_where|default=""}' autocomplete='off'/></p>
+                    <p><input type='text' class='form-control' id='court_where' name='court_where'
+                              value='{$model.court_where|default=""}' autocomplete='off'/></p>
                 </div>
             </div>
             <div class='col-sm-6'>
                 <div class='form-group'>
                     <label>公诉人</label>
-                    <p><input type='text' class='form-control' id='web_user_id' name='web_user_id' value='{$model.web_user_id|default=""}' autocomplete='off'/></p>
+                    <p>
+                        <html:select id="web_user_ids" name="web_user_ids[]" data='web_user_list' class="form-control"
+                                     multiple="multiple"
+                                     selected="model['web_user_ids']" data-value="id" data-key="name" first="请选择"/>
                 </div>
             </div>
             <div class='col-sm-6'>
                 <div class='form-group'>
                     <label>审判程序</label>
-                    <p><input type='text' class='form-control' id='procedure' name='procedure' value='{$model.procedure|default=""}' autocomplete='off'/></p>
+                    <p>
+                        <html:select name="procedure" data='procedure_type' class="form-control"
+                                     selected="model['procedure']" first="请选择"/>
+                    </p>
                 </div>
             </div>
             <div class='col-sm-6'>
@@ -61,27 +67,51 @@
 
 <script type='text/javascript'>
     $(document).ready(function () {
-        $('.day').datetimepicker({
+        $('#court_time').datetimepicker({
             language: 'zh-CN',
             format: "yyyy-mm-dd hh:ii",
+            // format: "yyyy-mm-dd",
             autoclose: true,
-            pickerPosition: 'top-left',
+            minuteStep: 30,
             todayHighlight: true,
-            todayBtn: 'linked',
+            todayBtn: true,
+            pickerPosition: "bottom-left"
         });
         $('.i-checks').iCheck({
             checkboxClass: 'icheckbox_square-green',
             radioClass: 'iradio_square-green',
         });
-        function validate(){
+        $("#web_user_ids").select2({
+                language: "zh-CN",
+                placeholder: "请选择",
+            }
+        );
+
+        function validate() {
             return $('#form').validate({
                 rules: {
-                    key: {
+                    name: {
                         required: true,
-                    }
+                    },
+                    court_time: {
+                        required: true,
+                    },
+                    court_where: {
+                        required: true,
+                    },
+                    'web_user_id[]': {
+                        required: true,
+                    },
+                    procedure: {
+                        required: true,
+                    },
+                    is_open: {
+                        required: true,
+                    },
                 },
             }).form();
         }
+
         $('#submit').click(function () {
             if (validate()) {
                 var load_btn = Ladda.create(this);
@@ -92,7 +122,7 @@
                     url: 'save',
                     data: data,
                     success: function (data) {
-                        if (check_status(data)){
+                        if (check_status(data)) {
                             $('#modal-md').modal('hide');
                             data_table.draw();
                         }

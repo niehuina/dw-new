@@ -1,0 +1,46 @@
+<extend name="public/base"/>
+
+<block name="title">{$section_item['name']}</block>
+<block name="content">
+    <div class="container breadcrumb">
+        当前位置： 网站首页 >
+        <if condition="empty($section_item['url'])">
+            <a href="/home/index/case_list/section_id/{$section_id}.html">{$section_item['name']}</a>
+            <else/>
+            <a href="{$section_item['url']}" target="_blank">{$section_item['name']}</a>
+        </if>
+    </div>
+    <div class="container mt-15">
+        <div class="fl" style="width: 220px;border: 1px solid #eee;padding: 20px;">
+            <if condition="empty($section_item['url'])">
+                <a href="{:url('index/case_list',['section_id'=>$section_item['id']])}"
+                   class="menu active">{$section_item['name']}</a>
+                <else/>
+                <a href="{$section_item['url']}" target="_blank" class="menu active">{$section_item['name']}</a>
+            </if>
+        </div>
+        <div class="block-box fr" style="width: 950px;">
+            <div class="block-title"><label class="color-primary">{$section_item['name']}</label></div>
+            <div class="block-content">
+                <ul class="article-list">
+                    <volist name="publicity_court_list" id="item">
+                        <li class="bg-icon-0 mb-10">
+                            <div class="fl">
+                                <a class="articleid" title="{$item.name}"
+                                   href="{:url('index/court_detail',['id'=>$item['id']])}">
+                                    {$item.name}
+                                </a>
+                            </div>
+                            <div class="fr"><span class="time">{$item.court_time}</span></div>
+                            <div class="clear"></div>
+                        </li>
+                    </volist>
+                </ul>
+                <html:pager total="$total_page" index="$page"/>
+            </div>
+        </div>
+        <div class="clear mt-15"></div>
+    </div>
+</block>
+<block name="script">
+</block>

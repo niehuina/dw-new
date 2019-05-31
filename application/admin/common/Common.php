@@ -55,8 +55,8 @@ class Common
         $permission['children'][] = array('id' => 'system.section', 'text' => '栏目设置');
         $permission['children'][] = array('id' => 'system.section_info', 'text' => '信息发布');
         $permission['children'][] = array('id' => 'system.news', 'text' => '新闻资讯');
-        $permission['children'][] = array('id' => 'system.publicity_court', 'text' => '出庭公示');
         $permission['children'][] = array('id' => 'system.politic_life', 'text' => '党内政治生活');
+        $permission['children'][] = array('id' => 'system.publicity_court', 'text' => '出庭公示');
         //$permission['children'][] = array('id' => 'system.party_affairs', 'text' => '党务检务公开');
         $system['children'][] = $permission;
 
@@ -192,14 +192,14 @@ class Common
         if ($is_admin || in_array('system.section_info', $permissions)) {
             $menu['children'][] = array('section_info', '信息发布');
         }
-        if ($is_admin || in_array('system.publicity_court', $permissions)) {
-            $menu['children'][] = array('publicity_court', '出庭公示');
-        }
         if ($is_admin || in_array('system.news', $permissions)) {
             $menu['children'][] = array('news', '新闻资讯');
         }
         if ($is_admin || in_array('system.politic_life', $permissions)) {
             $menu['children'][] = array('politic_life', '党内政治生活');
+        }
+        if ($is_admin || in_array('system.publicity_court', $permissions)) {
+            $menu['children'][] = array('publicity_court', '出庭公示');
         }
         /*if ($is_admin || in_array('system.party_affairs', $permissions)) {
             $menu['children'][] = array('party_affairs', '党务检务公开');

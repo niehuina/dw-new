@@ -8,6 +8,7 @@ use app\home\model\Banner;
 use app\home\common\Constant;
 use app\home\model\CaseInfo;
 use app\home\model\Organization;
+use app\home\model\PublicityCourt;
 use app\home\model\PublishType;
 use app\home\model\Section;
 use app\home\model\SectionInfo;
@@ -31,23 +32,12 @@ class IndexController extends BaseController
 
         $search_year = date('Y');
         $where['year(ci.accept_time)'] = $search_year;
-        $case_list = db('case_info ci')
-            ->join('web_user wu', 'wu.id=ci.web_user_id and year(ci.accept_time)='.$search_year, 'INNER')
-            ->join('setting', 'setting.id = wu.user_type and setting.type="user_type" and setting.code="prosecutor"')
-            ->where($where)
-            ->field('ci.web_user_id, max(ci.accept_time) as max_accept_time')
-            ->group('ci.web_user_id')
-            ->order('max_accept_time desc')
-            ->limit(0,15)->select();
-
-        foreach ($case_list as $key=>$case)
-        {
-            $case_list[$key] = WebUser::get($case['web_user_id']);
-        }
-
+        $case_list = CaseInfo::get_current_year_report(0, $list_count);
+        $case_list = $case_list['data'];
+        $this->assign('search_year', $search_year);
         $this->assign('case_list', $case_list);
 
-        $publicity_court_list = SectionInfo::get_list(Constant::SETION_PUBLICITY_COURT, [], 'si.*', 0, $list_count);
+        $publicity_court_list = PublicityCourt::get_list(['year(court_time)'=>$search_year], 'id,name,court_time', 0, $list_count);
         $this->assign('publicity_court_list', $publicity_court_list);
 
         $news_list = SectionInfo::get_list(Constant::SETION_NEWS, [], 'si.*', 0, $list_count);
@@ -72,6 +62,53 @@ class IndexController extends BaseController
 
         $section_list = db('section')->where(['deleted' => 0])->column('url', 'id');
         $this->assign('sec_list', $section_list);
+
+        return view();
+    }
+
+    public function court_list()
+    {
+        $section_id = $this->request->param('section_id');
+        $page = $this->request->param('page');
+        $page = isset($page) ? $page : 1;
+        $this->assign('page', $page);
+
+        $section_item = Section::get($section_id);
+        $this->assign('section_item', $section_item);
+
+        $section = Section::get($section_item['parent_id']);
+        $this->assign('section', $section);
+
+        $section_children_list = db('section')->where(['deleted' => 0, 'parent_id' => $section_item['parent_id']])
+            ->column('id,name,parent_id,url', 'id');
+        $this->assign('section_children_list', $section_children_list);
+
+        $search_year = date('Y');
+        $where['year(court_time)'] = $search_year;
+        $publicity_court_list = PublicityCourt::get_page_list($where,'*', $page, $this->page_length);
+        $total_count = $publicity_court_list['total_count'];
+        $total_page = $total_count % $this->page_length ? intval($total_count / $this->page_length) + 1 : $total_count / $this->page_length;
+        $this->assign('total_page', $total_page);
+        $this->assign('publicity_court_list', $publicity_court_list['data']);
+        $this->assign('section_id', $section_id);
+
+        return view();
+    }
+
+    public function court_detail()
+    {
+        $section_id = Constant::SETION_PUBLICITY_COURT;
+        $section = Section::get($section_id);
+        $this->assign('section', $section);
+
+        $section_children_list = db('section')->where(['deleted' => 0, 'parent_id' => $section['parent_id']])
+            ->column('id,name,parent_id,url', 'id');
+        $this->assign('section_children_list', $section_children_list);
+
+        $id = $this->request->param('id');
+        $publicity_court = PublicityCourt::get($id);
+        $this->set_info($publicity_court);
+        $this->assign('publicity_court', $publicity_court);
 
         return view();
     }
@@ -648,19 +685,68 @@ class IndexController extends BaseController
 
     public function publicity_court_index()
     {
-        $list_count = 10;
-        $publicity_court_list = SectionInfo::get_list(Constant::SETION_PUBLICITY_COURT, [], 'si.*', 0, $list_count);
-        $this->assign('publicity_court_list', $publicity_court_list);
-
         return view();
+    }
+
+    public function get_record()
+    {
+        $record_index = $this->request->param('record_index');
+        $record_index = intval($record_index);
+        $publicity_court_list = cache('publicity_court_list');
+
+        if($publicity_court_list && count($publicity_court_list) > $record_index){
+            if(isset($publicity_court_list[$record_index])){
+                $publicity_court = $publicity_court_list[$record_index];
+                return json(array(
+                    'resource' => 'cache',
+                    'count' => cache('recordCount'),
+                    'data' => $publicity_court,
+                    'record_index' => $record_index+1
+                ));
+            }
+        }else{
+            $search_year = date('Y');
+            $where['year(pc.court_time)'] = $search_year;
+            $order = 'court_time desc';
+            $recordCount = db('publicity_court pc')->where($where)->count();
+            $publicity_court_list = db('publicity_court pc')->where($where)
+                ->field('pc.id,pc.name,pc.court_time,pc.court_where,
+                    pc.web_user_ids, pc.procedure,pc.is_open')
+                ->order($order)->select();
+
+            foreach ($publicity_court_list as $key => $item) {
+                $this->set_info($item);
+                $publicity_court_list[$key] = $item;
+            }
+
+            cache('publicity_court_list', $publicity_court_list);
+            cache('recordCount', $recordCount);
+
+            return json(array(
+                'resource' => 'base',
+                'count'=> $recordCount,
+                'data' => $publicity_court_list[0],
+                'record_index' => 1
+            ));
+        }
     }
 
     public function publicity_court_detail()
     {
-        $section_info_id = $this->request->param('id');
-        $section_info = SectionInfo::get($section_info_id);
-        $this->assign('section_info', $section_info);
+        $id = $this->request->param('id');
+        $publicity_court = PublicityCourt::get($id);
+        $this->set_info($publicity_court);
+        $this->assign('publicity_court', $publicity_court);
 
         return view();
+    }
+
+    private function set_info(&$item)
+    {
+        $list = db('web_user')->where(['deleted' => 0, 'id' => ['in', $item['web_user_ids']]])->field('name')->select();
+        $item['web_user_name'] = implode('、', array_column($list, 'name'));
+        $item['procedure'] = get_value($item['procedure'], Constant::PROCEDURE_TYPE);
+        $item['is_open'] = get_value($item['is_open'], Constant::IS_OPEN);
+        $item['court_time'] = date('Y-m-d H:i', strtotime($item['court_time']));
     }
 }

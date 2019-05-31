@@ -47,14 +47,14 @@ class CaseInfo extends Model
     {
         $search_year = date('Y');
         if(empty($order)){
-            $order = 'CONVERT(web_user_name USING gbk) asc';
+            $order = 'wu.user_type, CONVERT(web_user_name USING gbk) asc';
         }
         $count = db('web_user wu')
             ->join('setting', 'setting.id = wu.user_type and setting.type="user_type" and setting.code="prosecutor"')
             ->join('case_info ci', 'wu.id=ci.web_user_id and year(ci.accept_time)='.$search_year, 'INNER')
             ->join('organization org', 'org.id=wu.organ_id', 'LEFT')
-            ->field('wu.name as web_user_name,ci.web_user_id, wu.position_ids, 
-                org.name as depart_name, count(ci.web_user_id) as case_count')
+            ->field('wu.name as web_user_name,ci.web_user_id, wu.position_ids, setting.value as user_type_name,
+                org.name as depart_name, count(ci.web_user_id) as case_count, setting.value')
             ->group('ci.web_user_id, wu.name, wu.position_ids, org.name')->count();
         $start = 0;
         if($page>1){
@@ -65,18 +65,18 @@ class CaseInfo extends Model
                 ->join('setting', 'setting.id = wu.user_type and setting.type="user_type" and setting.code="prosecutor"')
                 ->join('case_info ci', 'wu.id=ci.web_user_id and year(ci.accept_time)='.$search_year, 'INNER')
                 ->join('organization org', 'org.id=wu.organ_id', 'LEFT')
-                ->field('wu.name as web_user_name,ci.web_user_id, wu.position_ids, 
+                ->field('wu.name as web_user_name,ci.web_user_id, wu.position_ids, setting.value as user_type_name,
                 org.name as depart_name, count(ci.web_user_id) as case_count')
-                ->group('ci.web_user_id, wu.name, wu.position_ids, org.name')
+                ->group('ci.web_user_id, wu.name, wu.position_ids, org.name, setting.value')
                 ->order($order)->select();;
         }else{
             $records = db('web_user wu')
                 ->join('setting', 'setting.id = wu.user_type and setting.type="user_type" and setting.code="prosecutor"')
                 ->join('case_info ci', 'wu.id=ci.web_user_id and year(ci.accept_time)='.$search_year, 'INNER')
                 ->join('organization org', 'org.id=wu.organ_id', 'LEFT')
-                ->field('wu.name as web_user_name,ci.web_user_id, wu.position_ids, 
+                ->field('wu.name as web_user_name,ci.web_user_id, wu.position_ids, setting.value as user_type_name,
                 org.name as depart_name, count(ci.web_user_id) as case_count')
-                ->group('ci.web_user_id, wu.name, wu.position_ids, org.name')
+                ->group('ci.web_user_id, wu.name, wu.position_ids, org.name, setting.value')
                 ->limit($start, $length)->order($order)->select();
         }
         foreach ($records as $key => $item) {
