@@ -226,7 +226,7 @@ class CodeController extends BaseController
         $content .= "<block name='title'>" . $table_comment . "管理</block>\r\n";
         $content .= "<block name='content'>\r\n";
         $content .= "    <div class='row wrapper border-bottom white-bg page-heading'>\r\n";
-        $content .= "        <div class='col-lg-10'>\r\n";
+        $content .= "        <div class='col-lg-6'>\r\n";
         $content .= "            <h2>" . $table_comment . "管理</h2>\r\n";
         $content .= "            <ol class='breadcrumb'>\r\n";
         $content .= "                <li>\r\n";
@@ -240,8 +240,8 @@ class CodeController extends BaseController
         $content .= "                </li>\r\n";
         $content .= "            </ol>\r\n";
         $content .= "        </div>\r\n";
-        $content .= "        <div class='col-lg-2'>\r\n";
-        $content .= "            <div class='text-center'>\r\n";
+        $content .= "        <div class='col-lg-6'>\r\n";
+        $content .= "            <div class='text-right'>\r\n";
         $content .= "                <a data-toggle='modal' data-target='#modal-" . $modal_type . "' href='_item_maintain'\r\n";
         $content .= "                   class='btn btn-primary m-t-lg'>新增</a>\r\n";
         $content .= "            </div>\r\n";
